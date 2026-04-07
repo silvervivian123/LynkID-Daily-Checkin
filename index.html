@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sự kiện Điểm danh 10 ngày</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="logo">Điểm danh</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="soundBtn" title="Âm thanh">🔊</button>
+                <button class="btn-icon" id="rulesBtn" title="Thể lệ">ℹ️</button>
+                <button class="btn-icon" id="inventoryBtn" title="Kho quà">🎁 <span class="badge" id="inventoryCount">0</span></button>
+                <button class="btn-icon" id="exitBtn" title="Thoát">✕</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- State: Before Event Started -->
+            <div id="beforeEventState" class="event-state hidden">
+                <div class="event-header">
+                    <h2>Sự kiện Điểm danh 10 ngày</h2>
+                    <p>Sắp bắt đầu</p>
+                </div>
+                <div class="countdown-container">
+                    <p class="countdown-label">Sắp bắt đầu sau</p>
+                    <div class="countdown-timer" id="countdownBefore">
+                        <span class="countdown-part">00</span>:<span class="countdown-part">00</span>:<span class="countdown-part">00</span>
+                    </div>
+                </div>
+                <div class="event-locked">
+                    <p>🔒 Sự kiện chưa bắt đầu</p>
+                    <button class="btn-secondary" onclick="game.openModal('rulesModal')">Xem thể lệ</button>
+                </div>
+            </div>
+
+            <!-- State: Event Active -->
+            <div id="activeEventState" class="event-state">
+                <div class="event-header">
+                    <h2>Sự kiện Điểm danh 10 ngày</h2>
+                    <p>Hãy điểm danh mỗi ngày</p>
+                </div>
+
+                <div class="streak-bar">
+                    <span>🔥 Chuỗi liên tiếp: <strong id="streakCount">0</strong> ngày</span>
+                </div>
+
+                <div class="check-in-grid" id="checkInGrid">
+                    <!-- Day boxes will be generated here -->
+                </div>
+
+                <div class="event-countdown">
+                    <small>⏳ Sự kiện kết thúc sau: <span id="countdownActive">00:00:00</span></small>
+                </div>
+            </div>
+
+            <!-- State: Event Ended -->
+            <div id="endedEventState" class="event-state hidden">
+                <div class="event-header">
+                    <h2>Sự kiện đã kết thúc</h2>
+                    <p>Cảm ơn bạn đã tham gia</p>
+                </div>
+                <div class="event-ended-info">
+                    <p>🎉 Bạn đã nhận được <strong id="totalClaimed">0</strong>/10 quà</p>
+                    <p id="nextEventMessage" style="margin-top: 10px; font-size: 0.9em; color: #999;">Chờ sự kiện tiếp theo...</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="game.openModal('inventoryModal')">Xem Kho quà</button>
+                    <button class="btn-secondary" onclick="game.closeEvent()">Đóng</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Pop-up: Rules / Thể lệ -->
+    <div id="rulesModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" onclick="game.closeModal('rulesModal')">×</button>
+            
+            <div class="modal-body">
+                <h3>Cách chơi</h3>
+                
+                <div class="rules-content">
+                    <div class="rule-item">
+                        <strong>✓ Điểm danh mỗi ngày</strong>
+                        <p>Vào lúc quy định, nhấn vào ô quà "Hôm nay" để nhận phần thưởng</p>
+                    </div>
+                    <div class="rule-item">
+                        <strong>🔥 Duy trì chuỗi liên tiếp</strong>
+                        <p>Điểm danh liên tiếp để mở khoá quà hôm sau và tăng chuỗi</p>
+                    </div>
+                    <div class="rule-item">
+                        <strong>⭐ Mốc đặc biệt</strong>
+                        <p>Ngày 3, 7, 10 có quà đặc biệt. Hãy không bỏ lỡ!</p>
+                    </div>
+                    <div class="rule-item">
+                        <strong>🎁 Hoàn thành sự kiện</strong>
+                        <p>Điểm danh đủ 10 ngày để nhận bonus cuối cùng</p>
+                    </div>
+                    <div class="rule-item">
+                        <strong>⏰ Thời gian hợp lệ</strong>
+                        <p>Sự kiện kéo dài từ <span id="eventStartTime">--:-- --</span> đến <span id="eventEndTime">--:-- --</span></p>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="game.closeModal('rulesModal')">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: Today's Reward / Quà hôm nay -->
+    <div id="todayRewardModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="game.closeModal('todayRewardModal')">×</button>
+            
+            <div class="modal-body">
+                <div class="event-banner">Sự kiện Điểm danh 10 ngày</div>
+                
+                <div class="reward-display">
+                    <div class="reward-icon" id="todayRewardIcon">🎁</div>
+                    <h3 id="todayRewardName">Quà hôm nay</h3>
+                </div>
+
+                <div class="streak-info-modal">
+                    <div class="streak-item">
+                        <span class="label">Ngày</span>
+                        <span class="value" id="modalDayNumber">1</span>/10
+                    </div>
+                    <div class="streak-item">
+                        <span class="label">Chuỗi liên tiếp</span>
+                        <span class="value" id="modalStreakDays">0</span> ngày
+                    </div>
+                </div>
+
+                <p class="reward-hint" id="rewardHint"></p>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" id="claimBtn" onclick="game.claimReward()">Nhận quà</button>
+                    <button class="btn-secondary" onclick="game.openInventory()">Xem Kho quà</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: Locked Day / Ngày khóa -->
+    <div id="lockedModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="game.closeModal('lockedModal')">×</button>
+            
+            <div class="modal-body text-center">
+                <div class="locked-icon">🔒</div>
+                <h3>Chưa tới ngày</h3>
+                <p id="lockedText">Quay lại vào ngày tiếp theo để nhận quà này.</p>
+                
+                <div class="reward-preview">
+                    <p>Preview quà:</p>
+                    <div style="font-size: 2em;" id="lockedRewardIcon">🎁</div>
+                    <p id="lockedRewardName" style="margin-top: 5px;">---</p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="game.closeModal('lockedModal')">Đóng</button>
+                    <button class="btn-secondary" onclick="game.setReminder()">Bật nhắc nhở</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: Already Claimed / Đã nhận rồi -->
+    <div id="alreadyClaimedModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="game.closeModal('alreadyClaimedModal')">×</button>
+            
+            <div class="modal-body text-center">
+                <div class="success-icon">✓</div>
+                <h3>Bạn đã nhận quà này rồi</h3>
+                <p id="claimedText">Xem lại trong Kho quà hoặc quay lại điểm danh.</p>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="game.openInventory()">Xem Kho quà</button>
+                    <button class="btn-secondary" onclick="game.closeModal('alreadyClaimedModal')">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: Confirmation / Chúc mừng -->
+    <div id="confirmationModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="game.closeModal('confirmationModal')">×</button>
+            
+            <div class="modal-body text-center">
+                <div class="success-icon">✓</div>
+                <h3>Chúc mừng!</h3>
+                <p>Bạn đã nhận <strong id="confirmRewardName">quà</strong></p>
+                
+                <div class="confirmation-details">
+                    <p>🔥 Chuỗi hiện tại: <strong id="confirmStreakDays">0</strong> ngày</p>
+                    <p id="confirmRemaining" style="margin-top: 8px; font-size: 0.9em; color: #666;"></p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="game.closeModal('confirmationModal')">OK</button>
+                    <button class="btn-secondary" onclick="game.openInventory()">Xem Kho quà</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: Error / Lỗi -->
+    <div id="errorModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="game.closeModal('errorModal')">×</button>
+            
+            <div class="modal-body text-center">
+                <div class="error-icon">⚠️</div>
+                <h3 id="errorTitle">Lỗi</h3>
+                <p id="errorMessage">Đã xảy ra lỗi. Vui lòng thử lại.</p>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" id="errorRetryBtn" onclick="game.retryLastAction()">Thử lại</button>
+                    <button class="btn-secondary" onclick="game.closeModal('errorModal')">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pop-up: Inventory / Kho quà -->
+    <div id="inventoryModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" onclick="game.closeModal('inventoryModal')">×</button>
+            
+            <div class="modal-body">
+                <h3>Kho quà</h3>
+                
+                <div class="inventory-container" id="inventoryContainer">
+                    <!-- Items will be generated here -->
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="game.closeModal('inventoryModal')">Quay lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
