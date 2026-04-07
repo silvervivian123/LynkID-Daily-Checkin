@@ -17,6 +17,17 @@
   --td:#3A2560;--tl:#fff;--dim:#9B8BB5;
 }
 body{font-family:'Nunito',sans-serif;background:#1a0e30;color:var(--tl);overflow:auto;user-select:none;-webkit-user-select:none;}
+
+/* Loading Screen */
+.loading-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(170deg,#3b1f6e 0%,#1f0f3d 40%,#0d0620 100%);display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s;}
+.loading-screen.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.loading-inner{text-align:center;}
+.loading-logo{font-size:80px;animation:mBob 2s ease-in-out infinite;filter:drop-shadow(0 12px 30px rgba(245,166,35,.3));}
+.loading-title{font-size:28px;font-weight:900;color:var(--gold-l);margin-top:12px;text-shadow:0 2px 16px rgba(245,166,35,.35);}
+.loading-sub{font-size:13px;font-weight:700;color:var(--dim);margin-top:4px;}
+.loading-bar{width:180px;height:4px;background:var(--bg3);border-radius:4px;margin:20px auto 10px;overflow:hidden;}
+.loading-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:4px;transition:width .3s;}
+.loading-text{font-size:11px;font-weight:700;color:var(--dim);}
 .layout{display:flex;gap:24px;padding:20px;justify-content:center;align-items:flex-start;min-height:100vh;}
 
 /* ===== PHONE ===== */
@@ -127,6 +138,33 @@ body{font-family:'Nunito',sans-serif;background:#1a0e30;color:var(--tl);overflow
 .ok-btn{width:100%;padding:16px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:#fff;cursor:pointer;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(180deg,#7ddf2e,var(--grn));box-shadow:0 6px 0 var(--grn-d),0 0 24px rgba(88,204,2,.15),inset 0 2px 0 rgba(255,255,255,.2);transition:all .15s;}
 .ok-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--grn-d);}
 .ok-btn.done{background:linear-gradient(180deg,#4A3370,#2D1B4E);box-shadow:0 6px 0 #1a0e30;color:var(--dim);cursor:default;}
+#banner.success{color:var(--grn);}
+
+/* ===== FULLSCREEN CELEBRATION ===== */
+.celeb{display:none;position:absolute;inset:0;z-index:250;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+.celeb.show{display:flex;animation:celebIn .6s ease-out;}
+@keyframes celebIn{0%{opacity:0;}100%{opacity:1;}}
+.celeb-bg{position:absolute;inset:0;background:linear-gradient(170deg,rgba(59,31,110,.97),rgba(31,15,61,.98),rgba(13,6,32,.99));backdrop-filter:blur(20px);}
+.celeb-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.celeb-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(245,166,35,.2) 0%,rgba(123,79,191,.1) 40%,transparent 70%);animation:celebGlow 3s ease-in-out infinite;}
+@keyframes celebGlow{0%,100%{transform:translateX(-50%) scale(1);opacity:.6;}50%{transform:translateX(-50%) scale(1.2);opacity:1;}}
+.celeb-content{position:relative;z-index:2;padding:20px;max-width:340px;}
+.celeb-icon{font-size:80px;margin-bottom:8px;animation:celebBounce .8s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 8px 24px rgba(245,166,35,.4));}
+@keyframes celebBounce{0%{transform:scale(0) rotate(-20deg);opacity:0;}60%{transform:scale(1.2) rotate(5deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
+.celeb-title{font-size:24px;font-weight:900;color:var(--gold-l);text-shadow:0 2px 20px rgba(245,166,35,.4);margin-bottom:4px;animation:celebSlide .5s .2s both;}
+.celeb-sub{font-size:13px;font-weight:700;color:var(--dim);margin-bottom:20px;animation:celebSlide .5s .3s both;}
+@keyframes celebSlide{0%{transform:translateY(20px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+.celeb-reward{background:rgba(255,255,255,.06);border:2px solid rgba(245,166,35,.2);border-radius:16px;padding:16px;margin-bottom:20px;animation:celebSlide .5s .4s both;backdrop-filter:blur(4px);}
+.celeb-rw-icon{font-size:44px;margin-bottom:6px;}
+.celeb-rw-name{font-size:16px;font-weight:800;color:#fff;}
+.celeb-rw-desc{font-size:11px;color:var(--dim);font-weight:600;margin-top:2px;}
+.celeb-streak{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:20px;background:rgba(255,150,0,.12);border:1.5px solid rgba(255,150,0,.2);font-size:13px;font-weight:800;color:var(--org);margin-bottom:20px;animation:celebSlide .5s .5s both;}
+.celeb-btn{width:100%;padding:16px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:#fff;cursor:pointer;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(180deg,var(--gold-l),var(--gold));color:var(--td);box-shadow:0 6px 0 var(--gold-d),0 0 30px rgba(245,166,35,.2);transition:all .15s;animation:celebSlide .5s .6s both;}
+.celeb-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--gold-d);}
+.celeb-share{width:100%;padding:12px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--dim);cursor:pointer;background:rgba(255,255,255,.06);margin-top:8px;transition:all .15s;animation:celebSlide .5s .7s both;}
+.celeb-share:active{transform:scale(.97);}
+.celeb-confetti{position:absolute;width:8px;height:8px;border-radius:2px;animation:celebFall 2s ease-out forwards;pointer-events:none;z-index:1;}
+@keyframes celebFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1;}100%{transform:translateY(400px) rotate(1080deg) scale(0);opacity:0;}}
 
 /* ===== GAME POPUPS ===== */
 .ov{display:none;position:absolute;inset:0;z-index:200;background:rgba(10,5,20,.82);align-items:center;justify-content:center;backdrop-filter:blur(6px);}
@@ -257,6 +295,16 @@ body{font-family:'Nunito',sans-serif;background:#1a0e30;color:var(--tl);overflow
 </style>
 </head>
 <body>
+<!-- Loading Screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-inner">
+    <div class="loading-logo">🐧</div>
+    <div class="loading-title">LynkiD</div>
+    <div class="loading-sub">Daily Check-in</div>
+    <div class="loading-bar"><div class="loading-fill" id="loadingFill"></div></div>
+    <div class="loading-text" id="loadingText">Đang tải...</div>
+  </div>
+</div>
 <div class="layout">
 <div class="phone" id="app">
   <div class="phone-bg"><div class="bg-stars" id="bgStars"></div></div>
@@ -293,8 +341,27 @@ body{font-family:'Nunito',sans-serif;background:#1a0e30;color:var(--tl);overflow
     </div>
   </div>
 
-  <div class="bot"><button class="ok-btn" id="okBtn" onclick="onOk()">Điểm danh</button></div>
+  <div class="bot"><div id="banner" style="text-align:center;font-size:12px;font-weight:700;color:var(--gold-l);margin-bottom:8px;min-height:18px">↕ Kéo xé lịch để điểm danh!</div><button class="ok-btn" id="okBtn" onclick="onOk()">Điểm danh</button></div>
   <div id="popups"></div>
+  <!-- Fullscreen Celebration -->
+  <div class="celeb" id="celebScr">
+    <div class="celeb-bg"></div>
+    <div class="celeb-particles" id="celebParts"></div>
+    <div class="celeb-glow"></div>
+    <div class="celeb-content">
+      <div class="celeb-icon" id="celebIc">🎉</div>
+      <div class="celeb-title" id="celebTt">CHÚC MỪNG!</div>
+      <div class="celeb-sub" id="celebSb">Check-in thành công</div>
+      <div class="celeb-reward">
+        <div class="celeb-rw-icon" id="celebRwIc">🪙</div>
+        <div class="celeb-rw-name" id="celebRwNm">+20 Coin</div>
+        <div class="celeb-rw-desc" id="celebRwDs">Điểm LynkiD</div>
+      </div>
+      <div class="celeb-streak" id="celebStreak">🔥 7 ngày liên tiếp</div>
+      <button class="celeb-btn" id="celebBtn" onclick="closeCeleb()">Nhận thưởng</button>
+      <button class="celeb-share" onclick="closeCeleb()">📤 Chia sẻ với bạn bè</button>
+    </div>
+  </div>
   <div class="mss" id="msScr"><div class="mss-h"><span class="mss-bk" onclick="closeMs()">&#8592;</span><span class="mss-t">&#127942; Cột mốc phần thưởng</span></div><div class="mss-b" id="msBody"></div></div>
 </div>
 <div class="tester" id="testerPanel"></div>
@@ -328,13 +395,20 @@ var MISSIONS=[
   {ic:'✅',tt:'Giao dịch MBN dưới 50k',ds:'1 giao dịch MBN',p:1,t:1,rw:'+1 lượt bù',dn:1}
 ];
 var mascotPh=['Xé lịch đi nào! 📅','Chuỗi đẹp lắm! 🔥','Cố lên nào! 💪','Quà đang chờ! 🎁','Streak '+STREAK+' rồi! 🎉'];
-for(var _i=1;_i<=30;_i++){var _ms=MS.find(function(m){return m.day===_i;});DAYS.push({day:_i,st:_i<CUR?'checked':_i===CUR?'today':'future',isMs:!!_ms,icon:_ms?_ms.icon:(_i%3===0?'🎮':_i%5===0?'🪙':'🎁'),label:_ms?_ms.name:(_i%3===0?'Lượt chơi':_i%5===0?'Coin':'Quà'),rw:_ms?_ms.rw:[{i:'🪙',a:'+20 Coin',t:'Điểm LynkiD'}]});}
+var RWPOOL=[
+  {i:'🪙',a:'+20 Coin',t:'Điểm LynkiD'},
+  {i:'🪙',a:'+30 Coin',t:'Điểm LynkiD'},
+  {i:'🪙',a:'+50 Coin',t:'Điểm LynkiD'},
+  {i:'🎮',a:'+1 Lượt chơi',t:'Lượt chơi game'},
+  {i:'🎁',a:'Quà bí ẩn',t:'Mở để xem!'}
+];
+for(var _i=1;_i<=30;_i++){var _ms=MS.find(function(m){return m.day===_i;});var _rw=_ms?_ms.rw[0]:RWPOOL[_i%RWPOOL.length];DAYS.push({day:_i,st:_i<CUR?'checked':_i===CUR?'today':'future',isMs:!!_ms,icon:_rw.i,label:_ms?_ms.name:_rw.a,rw:_rw});}
 
 // ===== BG STARS =====
 (function(){var c=document.getElementById('bgStars');for(var i=0;i<30;i++){var s=document.createElement('div');s.className='bg-star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*3+'s';s.style.animationDuration=(2+Math.random()*3)+'s';c.appendChild(s);}})();
 
 // ===== POPUPS HTML =====
-function rwHtml(rw){return rw.map(function(r){return '<div class="rr"><span class="ri">'+r.i+'</span><div class="rt"><div class="ra">'+r.a+'</div><div class="ry">'+r.t+'</div></div></div>';}).join('');}
+function rwHtml(rw){if(!rw)return '';if(Array.isArray(rw))return rw.map(function(r){return '<div class="rr"><span class="ri">'+r.i+'</span><div class="rt"><div class="ra">'+r.a+'</div><div class="ry">'+r.t+'</div></div></div>';}).join('');return '<div class="rr"><span class="ri">'+rw.i+'</span><div class="rt"><div class="ra">'+rw.a+'</div><div class="ry">'+rw.t+'</div></div></div>';}
 document.getElementById('popups').innerHTML=[
   '<div class="ov" id="ovRw"><div class="gf"><div class="gf-top">🎉</div><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">CHÚC MỪNG!</div><div class="gf-body"><div style="font-size:38px;margin-bottom:4px" id="rwIc"></div><div style="font-size:14px;font-weight:800;color:var(--td)" id="rwTt"></div><div style="font-size:10px;color:var(--pur);font-weight:600;margin-bottom:10px" id="rwSb"></div><div id="rwLs"></div><button class="gb gold" onclick="closeOv(\'ovRw\')">Nhận thưởng</button><button class="gb pur" onclick="closeOv(\'ovRw\')">📤 Chia sẻ</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovRw\')">✕</div></div></div>',
   '<div class="ov" id="ovNr"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">ĐIỂM DANH</div><div class="gf-body"><div style="font-size:44px;margin-bottom:4px">🐧</div><div style="font-size:14px;font-weight:800;color:var(--td)">Điểm danh thành công!</div><div style="font-size:10px;color:var(--pur);font-weight:600;margin:4px 0 10px" id="nrSb"></div><button class="gb gold" onclick="closeOv(\'ovNr\')">Tiếp tục</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovNr\')">✕</div></div></div>',
@@ -364,7 +438,7 @@ document.getElementById('testerPanel').innerHTML='<h2><span>🧪</span> Tester P
 '<div class="ts"><div class="tsl">🌐 Lỗi mạng / Hệ thống</div><div class="tg"><button class="tb r" onclick="T.net(\'error\')">📡 Mất kết nối</button><button class="tb r" onclick="T.net(\'server\')">🔧 Bảo trì</button><button class="tb r" onclick="T.net(\'timeout\')">⏱️ Timeout</button><button class="tb o" onclick="T.net(\'slow\')">🐌 Mạng chậm</button><button class="tb r" onclick="T.net(\'ended\')">🏁 Sự kiện kết thúc</button><button class="tb g" onclick="T.net(\'ok\')">✅ Bình thường</button></div></div>'+
 '<div class="ts"><div class="tsl">🎁 Phần thưởng</div><div class="tg"><button class="tb y" onclick="T.setRw(\'none\')">Không quà</button><button class="tb y" onclick="T.setRw(\'coin\')">Coin</button><button class="tb y" onclick="T.setRw(\'voucher\')">Voucher</button><button class="tb y" onclick="T.setRw(\'multi\')">Nhiều quà</button><button class="tb gr" onclick="T.emptyVault()">Kho trống</button><button class="tb t" onclick="T.fullVault()">Kho đầy</button></div></div>'+
 '<div class="ts"><div class="tsl">🏆 Cột mốc</div><div class="tg"><button class="tb p" onclick="T.msAll()">Tất cả claimed</button><button class="tb p" onclick="T.msNone()">Tất cả locked</button><button class="tb p" onclick="T.msNext()">Mở khóa tiếp</button></div></div>'+
-'<div class="ts"><div class="tsl">⚡ Edge cases</div><div class="tg"><button class="tb gr" onclick="T.dblCheckin()">Double check-in</button><button class="tb gr" onclick="T.longName()">Tên quà dài</button><button class="tb p" onclick="T.showBlinbox()">🎰 Blinbox popup</button><button class="tb b" onclick="T.showRules()">📜 Thể lệ</button></div></div>'+
+'<div class="ts"><div class="tsl">⚡ Edge cases</div><div class="tg"><button class="tb gr" onclick="T.dblCheckin()">Double check-in</button><button class="tb gr" onclick="T.longName()">Tên quà dài</button><button class="tb p" onclick="T.showBlinbox()">🎰 Blinbox popup</button><button class="tb b" onclick="T.showRules()">📜 Thể lệ</button><button class="tb t" onclick="T.showLoading()">⏳ Loading</button></div></div>'+
 '<div class="ts"><div class="tsl">📝 Log</div><div class="tlog" id="tLog"><div class="li"><span class="lt">[init]</span> Ready</div></div></div>';
 
 // ===== HELPERS =====
@@ -491,8 +565,9 @@ function doCheckin(){
   $('okBtn').classList.add('done');$('okBtn').textContent='✅ Đã điểm danh';
   var mc=$('mascot');mc.classList.add('happy');setTimeout(function(){mc.classList.remove('happy');},700);
   var today=DAYS.find(function(d){return d.day===CUR;});
+  var rw=today.rw;
   var now=new Date().toTimeString().slice(0,5);
-  today.rw.forEach(function(r){VAULT.push({i:r.i,n:r.a,desc:r.t,t:'07/04 '+now,c:r.i==='🪙'?'coin':r.i==='🎟️'?'voucher':'game',act:r.i==='🪙'?'Đã cộng':r.i==='🎟️'?'Dùng ngay':'Chơi ngay'});});
+  VAULT.push({i:rw.i,n:rw.a,desc:rw.t,t:'07/04 '+now,c:rw.i==='🪙'?'coin':rw.i==='🎟️'?'voucher':'game',act:rw.i==='🪙'?'Đã cộng':rw.i==='🎟️'?'Dùng ngay':'Chơi ngay'});
   VT.coins+=20;
   for(var i=0;i<5;i++)setTimeout(spawnCoin,i*100);
   $('vBadge').textContent=VAULT.length;
@@ -506,14 +581,42 @@ function doCheckin(){
     $('msRTt').textContent='Cột mốc ngày '+hitMs.day+'!';
     $('msRSb').textContent='Chúc mừng! Bạn đã đạt cột mốc '+hitMs.name;
     $('msRRw').innerHTML=rwHtml(hitMs.rw);
-    showOv('ovMsR');confetti(document.querySelector('#ovMsR .gf-body'));
+    showOv('ovMsR');celebConfetti();
     for(var j=0;j<8;j++)setTimeout(spawnCoin,j*80);
-  }else if(today.rw.length>0){
-    $('rwIc').textContent=today.rw[0].i;$('rwTt').textContent='Check-in thành công!';
-    $('rwSb').textContent='Ngày '+CUR+' — Chuỗi '+STREAK+' ngày 🔥';
-    $('rwLs').innerHTML=rwHtml(today.rw);
-    showOv('ovRw');confetti(document.querySelector('#ovRw .gf-body'));
-  }else{$('nrSb').textContent='Ngày '+CUR+' — Chuỗi '+STREAK+' ngày 🔥';showOv('ovNr');}
+  }else{
+    showCeleb(rw.i,rw.a,rw.t);
+  }
+}
+
+// ===== FULLSCREEN CELEBRATION =====
+function showCeleb(icon,name,desc){
+  $('celebIc').textContent='🎉';
+  $('celebTt').textContent='CHÚC MỪNG!';
+  $('celebSb').textContent='Điểm danh ngày '+CUR+' thành công';
+  $('celebRwIc').textContent=icon;
+  $('celebRwNm').textContent=name;
+  $('celebRwDs').textContent=desc;
+  $('celebStreak').textContent='🔥 '+STREAK+' ngày liên tiếp';
+  $('celebScr').classList.add('show');
+  celebConfetti();
+}
+function celebConfetti(){
+  var el=$('celebParts');el.innerHTML='';
+  var cols=['#58CC02','#FFC800','#CE82FF','#1CB0F6','#FF4B4B','#FF9600','#FFD76E'];
+  for(var i=0;i<40;i++){
+    var c=document.createElement('div');c.className='celeb-confetti';
+    c.style.left=Math.random()*100+'%';c.style.top=-10+Math.random()*20+'%';
+    c.style.background=cols[~~(Math.random()*cols.length)];
+    c.style.animationDelay=Math.random()*1.5+'s';
+    c.style.animationDuration=(1.5+Math.random()*1)+'s';
+    c.style.width=(4+Math.random()*6)+'px';
+    c.style.height=(4+Math.random()*6)+'px';
+    el.appendChild(c);
+  }
+}
+function closeCeleb(){
+  $('celebScr').classList.remove('show');
+  $('celebParts').innerHTML='';
 }
 
 function claimMsPopup(){
@@ -670,8 +773,27 @@ var T={
   dblCheckin:function(){tLog('⚡ Double check-in','warn');onOk();setTimeout(onOk,100);setTimeout(onOk,200);},
   longName:function(){var d=DAYS.find(function(x){return x.day===CUR;});if(d){d.rw=[{i:'🎟️',a:'1 Super Mega Ultra Voucher',t:'E-Voucher Giảm Giá Đặc Biệt Siêu Khuyến Mãi 500K VNĐ'}];d.label='Super Mega Voucher';renderStrip();tLog('📝 Tên dài','warn');}},
   showBlinbox:function(){showBlinboxPopup();tLog('🎰 Blinbox popup','ok');},
-  showRules:function(){showOv('ovRules');tLog('📜 Thể lệ','ok');}
+  showRules:function(){showOv('ovRules');tLog('📜 Thể lệ','ok');},
+  showLoading:function(){var scr=$('loadingScreen');scr.classList.remove('hide');var fill=$('loadingFill');var txt=$('loadingText');fill.style.width='0';txt.textContent='Đang tải...';var steps=[{p:30,t:'Đang kết nối...',d:400},{p:60,t:'Tải dữ liệu...',d:500},{p:85,t:'Chuẩn bị giao diện...',d:400},{p:100,t:'Sẵn sàng!',d:300}];var i=0;function next(){if(i>=steps.length){setTimeout(function(){scr.classList.add('hide');},200);return;}fill.style.width=steps[i].p+'%';txt.textContent=steps[i].t;var d=steps[i].d;i++;setTimeout(next,d);}next();tLog('⏳ Loading screen','ok');}
 };
+
+// ===== LOADING SCREEN =====
+(function(){
+  var fill=$('loadingFill'),txt=$('loadingText'),scr=$('loadingScreen');
+  var steps=[
+    {p:30,t:'Đang kết nối...',d:400},
+    {p:60,t:'Tải dữ liệu...',d:500},
+    {p:85,t:'Chuẩn bị giao diện...',d:400},
+    {p:100,t:'Sẵn sàng!',d:300}
+  ];
+  var i=0;
+  function next(){
+    if(i>=steps.length){setTimeout(function(){scr.classList.add('hide');},200);return;}
+    fill.style.width=steps[i].p+'%';txt.textContent=steps[i].t;
+    var d=steps[i].d;i++;setTimeout(next,d);
+  }
+  next();
+})();
 
 // ===== INIT =====
 renderStrip();updateNM();
