@@ -1,265 +1,678 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sự kiện Điểm danh 10 ngày</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LynkiD - Daily Check-in</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#F5A623;--gold-l:#FFD76E;--gold-d:#C47F17;
+  --pur:#7B4FBF;--pur-l:#A87FE0;--pur-d:#5A3590;
+  --grn:#58CC02;--grn-d:#46a302;
+  --red:#FF4B4B;--blu:#1CB0F6;--org:#FF9600;
+  --bg:#2D1B4E;--bg2:#3A2560;--bg3:#4A3370;
+  --cbg:#F0E6FF;--cbg2:#E8D8F8;
+  --td:#3A2560;--tl:#fff;--dim:#9B8BB5;
+}
+body{font-family:'Nunito',sans-serif;background:#1a0e30;color:var(--tl);overflow:auto;user-select:none;-webkit-user-select:none;}
+.layout{display:flex;gap:24px;padding:20px;justify-content:center;align-items:flex-start;min-height:100vh;}
+
+/* ===== PHONE ===== */
+.phone{width:393px;height:852px;flex-shrink:0;position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:24px;box-shadow:0 0 60px rgba(0,0,0,.6);}
+
+/* Animated BG */
+.phone-bg{position:absolute;inset:0;z-index:0;background:linear-gradient(170deg,#3b1f6e 0%,#1f0f3d 40%,#0d0620 100%);}
+.phone-bg::before{content:'';position:absolute;top:-40%;right:-30%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(245,166,35,.08) 0%,transparent 70%);animation:bgOrb 8s ease-in-out infinite;}
+.phone-bg::after{content:'';position:absolute;bottom:-30%;left:-20%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(123,79,191,.1) 0%,transparent 70%);animation:bgOrb 10s ease-in-out infinite reverse;}
+@keyframes bgOrb{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,-20px) scale(1.1);}}
+.bg-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.bg-star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:0;animation:twinkle 3s ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.5);}50%{opacity:.4;transform:scale(1);}}
+
+/* Header */
+.hdr{padding:52px 20px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;z-index:10;}
+.hdr-streak{display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-weight:800;font-size:14px;background:rgba(255,150,0,.15);color:var(--org);border:1.5px solid rgba(255,150,0,.25);cursor:pointer;transition:transform .15s;}
+.hdr-streak:active{transform:scale(.9);}
+.hdr-icons{display:flex;gap:8px;}
+.hdr-ic{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;position:relative;transition:transform .15s;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);backdrop-filter:blur(4px);}
+.hdr-ic:active{transform:scale(.85);}
+.hdr-ic .dot{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--red);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg);}
+
+/* Lobby */
+.lobby{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;padding:0 0 4px;justify-content:center;}
+
+/* Mascot */
+.mascot-wrap{text-align:center;margin-bottom:8px;cursor:pointer;position:relative;}
+.mascot-wrap:active .mascot-ch{transform:scale(.88);}
+.mascot-ch{font-size:72px;transition:transform .2s;filter:drop-shadow(0 12px 30px rgba(245,166,35,.25));animation:mBob 3s ease-in-out infinite;}
+@keyframes mBob{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-10px) rotate(1deg);}}
+.mascot-ch.happy{animation:mHappy .6s ease-out!important;}
+@keyframes mHappy{0%{transform:scale(1);}30%{transform:scale(1.3) rotate(8deg);}60%{transform:scale(1.1) rotate(-4deg);}100%{transform:scale(1);}}
+.mascot-bub{position:absolute;top:-8px;right:-24px;background:#fff;color:var(--td);padding:6px 12px;border-radius:12px;font-size:11px;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.2);opacity:0;transform:scale(.5) translateY(8px);transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;white-space:nowrap;}
+.mascot-bub.show{opacity:1;transform:scale(1) translateY(0);}
+.mascot-bub::after{content:'';position:absolute;bottom:-5px;left:18px;width:10px;height:10px;background:#fff;transform:rotate(45deg);border-radius:2px;}
+
+/* Streak display */
+.streak-display{text-align:center;margin-bottom:12px;}
+.streak-big{font-size:28px;font-weight:900;color:var(--gold-l);text-shadow:0 2px 16px rgba(245,166,35,.35);}
+.streak-sub{font-size:11px;color:var(--dim);font-weight:700;margin-top:2px;}
+
+/* Next milestone bar */
+.next-ms{margin:0 20px 12px;padding:10px 14px;border-radius:14px;display:flex;align-items:center;gap:10px;background:rgba(245,166,35,.06);border:1.5px solid rgba(245,166,35,.15);cursor:pointer;transition:all .2s;}
+.next-ms:active{transform:scale(.97);}
+.next-ms .nm-ic{font-size:28px;}
+.next-ms .nm-info{flex:1;}
+.next-ms .nm-t{font-size:11px;font-weight:800;color:var(--gold-l);}
+.next-ms .nm-s{font-size:10px;color:var(--dim);font-weight:600;}
+.next-ms .nm-bar{height:3px;background:var(--bg3);border-radius:3px;margin-top:4px;overflow:hidden;}
+.next-ms .nm-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .5s;}
+.next-ms .nm-arr{font-size:16px;color:var(--gold);animation:arrP 1.5s ease-in-out infinite;}
+@keyframes arrP{0%,100%{transform:translateX(0);opacity:.5;}50%{transform:translateX(4px);opacity:1;}}
+
+/* ===== CALENDAR STRIP ===== */
+.strip-area{width:100%;flex-shrink:0;position:relative;z-index:1;}
+.strip-label{margin:0 20px 6px;font-size:12px;font-weight:800;color:var(--dim);display:flex;align-items:center;gap:6px;}
+.strip{display:flex;gap:6px;overflow-x:scroll;scroll-snap-type:x proximity;padding:4px 20px 8px;scrollbar-width:none;cursor:grab;}
+.strip:active{cursor:grabbing;}
+.strip::-webkit-scrollbar{display:none;}
+.strip-dots{display:flex;justify-content:center;gap:4px;margin:4px 0 0;}
+.s-dot{width:6px;height:6px;border-radius:50%;background:var(--bg3);transition:all .3s;}
+.s-dot.on{width:18px;border-radius:3px;background:var(--gold);}
+
+/* Day card */
+.dc{flex:0 0 72px;display:flex;flex-direction:column;align-items:center;position:relative;scroll-snap-align:center;transition:transform .15s;}
+.dc:active{transform:scale(.9);}
+.dc-lbl{font-size:9px;font-weight:700;color:var(--dim);margin-bottom:3px;}
+.dc-lbl.today{color:var(--gold-l);font-weight:800;}
+.dc-body{width:66px;height:84px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all .3s;}
+.dc-ico{font-size:22px;line-height:1;}
+.dc-rw{font-size:7px;font-weight:700;margin-top:2px;max-width:58px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dc .ms-star{position:absolute;top:-5px;right:-2px;font-size:7px;background:var(--gold);color:var(--td);border-radius:4px;padding:1px 4px;font-weight:900;z-index:3;}
+
+/* States */
+.dc.checked .dc-body{background:linear-gradient(135deg,#6DD400,var(--grn));border:2.5px solid var(--grn-d);box-shadow:0 3px 0 var(--grn-d);}
+.dc.checked .dc-body::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);animation:shim 3s ease-in-out infinite;}
+@keyframes shim{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.dc.checked .dc-rw{color:rgba(255,255,255,.8);}
+
+.dc.today .dc-body{background:linear-gradient(135deg,#3d2415,#2c1810);border:2.5px solid var(--gold);box-shadow:0 3px 0 var(--gold-d),0 0 20px rgba(245,166,35,.2);animation:tPulse 2s ease-in-out infinite;}
+@keyframes tPulse{0%,100%{box-shadow:0 3px 0 var(--gold-d),0 0 14px rgba(245,166,35,.15);}50%{box-shadow:0 3px 0 var(--gold-d),0 0 26px rgba(245,166,35,.35);}}
+
+.dc.future .dc-body{background:var(--bg2);border:2.5px solid var(--bg3);opacity:.3;}
+.dc.future .dc-rw{color:var(--dim);}
+
+/* Missed day — red tint, tappable */
+.dc.missed .dc-body{background:linear-gradient(135deg,#3d1520,#2c1018);border:2.5px solid var(--red);opacity:.7;box-shadow:0 3px 0 #8b1a1a;}
+.dc.missed .dc-rw{color:rgba(255,255,255,.6);}
+.dc.missed .dc-lbl{color:var(--red);}
+
+/* Tear page */
+.tear-page{position:absolute;inset:0;border-radius:14px;z-index:5;background:linear-gradient(160deg,#FFF8E7,#F5E6D0,#E8D5B8);display:flex;flex-direction:column;align-items:center;justify-content:center;transform-origin:top center;cursor:grab;box-shadow:0 4px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .1s linear,opacity .1s linear;}
+.tear-page:active{cursor:grabbing;}
+.tear-page::before{content:'';position:absolute;top:0;left:8%;right:8%;height:2px;border-top:2px dashed rgba(90,62,40,.2);}
+.tear-page::after{content:'';position:absolute;bottom:0;left:8%;right:8%;height:2px;border-bottom:2px dashed rgba(90,62,40,.15);}
+.tear-day{font-size:26px;font-weight:900;color:#5a3e28;}
+.tear-sub{font-size:9px;font-weight:700;color:#8a6d55;margin-top:1px;}
+.tear-hint{position:absolute;bottom:5px;font-size:7px;color:#a08060;font-weight:700;animation:hp 1.5s ease-in-out infinite;}
+@keyframes hp{0%,100%{opacity:.3;transform:translateY(0);}50%{opacity:1;transform:translateY(-2px);}}
+.tear-page.tearing{transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .4s ease-out;transform:perspective(400px) rotateX(-120deg) translateY(40px) scale(.6);opacity:0;pointer-events:none;}
+.dc.today .reveal{display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .4s .2s;}
+.dc.today.torn .reveal{opacity:1;}
+.dc.today.torn .dc-body{background:linear-gradient(135deg,#6DD400,var(--grn));border-color:var(--grn-d);box-shadow:0 3px 0 var(--grn-d);}
+
+/* Bottom */
+.bot{flex-shrink:0;padding:6px 20px 34px;position:relative;z-index:1;}
+.ok-btn{width:100%;padding:16px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:#fff;cursor:pointer;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(180deg,#7ddf2e,var(--grn));box-shadow:0 6px 0 var(--grn-d),0 0 24px rgba(88,204,2,.15),inset 0 2px 0 rgba(255,255,255,.2);transition:all .15s;}
+.ok-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--grn-d);}
+.ok-btn.done{background:linear-gradient(180deg,#4A3370,#2D1B4E);box-shadow:0 6px 0 #1a0e30;color:var(--dim);cursor:default;}
+
+/* ===== GAME POPUPS ===== */
+.ov{display:none;position:absolute;inset:0;z-index:200;background:rgba(10,5,20,.82);align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.ov.show{display:flex;}
+.gf{width:330px;position:relative;animation:gfIn .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes gfIn{0%{transform:scale(.5) translateY(30px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.gf-bdr{border:4px solid var(--gold);border-radius:22px;box-shadow:0 0 0 3px var(--gold-d),0 8px 32px rgba(0,0,0,.5),inset 0 0 0 2px var(--gold-l);overflow:hidden;}
+.gf-inn{background:linear-gradient(180deg,var(--pur) 0%,var(--pur-d) 6%,var(--cbg) 6%,var(--cbg) 100%);}
+.gf-ttl{text-align:center;padding:10px 16px 8px;font-size:15px;font-weight:900;color:var(--tl);text-shadow:0 2px 4px rgba(0,0,0,.3);}
+.gf-body{background:var(--cbg);margin:0 8px 8px;border-radius:14px;padding:18px 14px;border:2px solid var(--cbg2);color:var(--td);text-align:center;position:relative;overflow:hidden;}
+.gf-x{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);width:36px;height:36px;border-radius:50%;background:var(--red);border:3px solid #cc3333;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 3px 0 #aa2222;z-index:5;transition:transform .15s;}
+.gf-x:active{transform:translateX(-50%) translateY(2px);}
+.gf-top{position:absolute;top:-36px;left:50%;transform:translateX(-50%);font-size:52px;z-index:5;filter:drop-shadow(0 4px 12px rgba(245,166,35,.4));animation:topBob 2s ease-in-out infinite;}
+@keyframes topBob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-4px);}}
+.gb{width:100%;padding:11px;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;color:#fff;margin-top:7px;text-transform:uppercase;transition:all .15s;letter-spacing:.5px;}
+.gb:active{transform:translateY(2px);box-shadow:none!important;}
+.gb.gold{background:linear-gradient(180deg,var(--gold-l),var(--gold));color:var(--td);box-shadow:0 4px 0 var(--gold-d);}
+.gb.pur{background:linear-gradient(180deg,var(--pur-l),var(--pur));box-shadow:0 4px 0 var(--pur-d);}
+.gb.grn{background:linear-gradient(180deg,#7ddf2e,var(--grn));box-shadow:0 4px 0 var(--grn-d);}
+.gb.ghost{background:transparent;box-shadow:none;color:var(--pur);font-size:11px;text-transform:none;margin-top:3px;}
+.rr{display:flex;align-items:center;gap:10px;padding:9px;background:rgba(123,79,191,.06);border-radius:10px;margin-bottom:5px;text-align:left;}
+.rr .ri{font-size:26px;flex-shrink:0;}
+.rr .rt{flex:1;}
+.rr .ra{font-size:13px;font-weight:800;color:var(--td);}
+.rr .ry{font-size:9px;color:var(--pur);font-weight:600;}
+.rr .rx{font-size:8px;color:#999;font-weight:600;}
+/* Vault */
+.vs{display:flex;gap:5px;margin-bottom:10px;padding:10px;background:rgba(123,79,191,.05);border-radius:12px;border:1.5px solid var(--cbg2);}
+.vs-i{flex:1;text-align:center;padding:6px 3px;}
+.vs-i+.vs-i{border-left:1.5px solid var(--cbg2);}
+.vs-i .vn{font-size:16px;font-weight:900;}
+.vs-i .vl{font-size:7px;font-weight:700;color:var(--pur);text-transform:uppercase;margin-top:1px;display:flex;align-items:center;justify-content:center;gap:2px;}
+.vs-i:nth-child(1) .vn{color:var(--gold-d);}
+.vs-i:nth-child(2) .vn{color:var(--pur);}
+.vs-i:nth-child(3) .vn{color:var(--blu);}
+.vsc{max-height:280px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--cbg2) transparent;}
+.vsc::-webkit-scrollbar{width:3px;}
+.vsc::-webkit-scrollbar-thumb{background:var(--cbg2);border-radius:3px;}
+/* Vault item card */
+.vi{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:6px;background:#fff;border-radius:12px;border:1.5px solid #eee;box-shadow:0 1px 4px rgba(0,0,0,.04);position:relative;}
+.vi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px;}
+.vi.coin::before{background:var(--gold);}
+.vi.voucher::before{background:var(--grn);}
+.vi.game::before{background:var(--red);}
+.vi-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:#f5f5f5;flex-shrink:0;}
+.vi-info{flex:1;min-width:0;}
+.vi-name{font-size:13px;font-weight:800;color:var(--td);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vi-desc{font-size:9px;color:#888;font-weight:600;}
+.vi-tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:8px;font-weight:800;margin-top:2px;text-transform:uppercase;}
+.vi-tag.coin{background:rgba(245,166,35,.12);color:var(--gold-d);}
+.vi-tag.voucher{background:rgba(123,79,191,.1);color:var(--pur);}
+.vi-tag.game{background:rgba(255,75,75,.1);color:var(--red);}
+.vi-act{padding:5px 10px;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-size:9px;font-weight:800;cursor:pointer;color:#fff;flex-shrink:0;white-space:nowrap;}
+.vi-act.used{background:#ccc;color:#888;cursor:default;}
+.vi-act.use{background:var(--grn);box-shadow:0 2px 0 var(--grn-d);}
+.vi-act.play{background:var(--red);box-shadow:0 2px 0 #c33;}
+.vtabs{display:flex;gap:3px;margin-bottom:8px;}
+.vtab{flex:1;padding:5px;border-radius:8px;font-size:9px;font-weight:800;text-align:center;cursor:pointer;background:rgba(123,79,191,.06);color:var(--pur);border:none;font-family:'Nunito',sans-serif;transition:all .2s;}
+.vtab.on{background:var(--pur);color:#fff;}
+/* Toggle */
+.trow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--cbg2);}
+.trow:last-child{border-bottom:none;}
+.trow .trl{font-size:13px;font-weight:700;color:var(--td);display:flex;align-items:center;gap:8px;}
+.tsw{width:48px;height:26px;border-radius:13px;background:#ccc;position:relative;cursor:pointer;transition:background .3s;}
+.tsw.on{background:var(--grn);}
+.tsw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .3s;}
+.tsw.on::after{transform:translateX(22px);}
+/* Mission */
+.mi{display:flex;align-items:center;gap:9px;padding:9px;background:rgba(123,79,191,.06);border-radius:10px;margin-bottom:7px;text-align:left;}
+.mi .mii{font-size:26px;flex-shrink:0;}
+.mi .mif{flex:1;}
+.mi .mit{font-size:11px;font-weight:800;color:var(--td);}
+.mi .mid{font-size:9px;color:var(--pur);font-weight:600;}
+.mi .mib{height:4px;background:var(--cbg2);border-radius:4px;margin-top:3px;overflow:hidden;}
+.mi .mibf{height:100%;background:var(--grn);border-radius:4px;}
+.mi .mia{padding:4px 9px;border:none;border-radius:7px;font-family:'Nunito',sans-serif;font-size:9px;font-weight:800;cursor:pointer;color:#fff;flex-shrink:0;}
+.mi .mia.ok{background:var(--grn);}
+.mi .mia.no{background:var(--bg3);color:var(--dim);cursor:default;}
+/* Milestone screen */
+.mss{position:absolute;inset:0;background:linear-gradient(180deg,#2D1B4E,#1a0e30);z-index:150;display:none;flex-direction:column;overflow:hidden;}
+.mss.show{display:flex;animation:ssIn .3s ease-out;}
+@keyframes ssIn{0%{transform:translateX(100%);}100%{transform:translateX(0);}}
+.mss-h{display:flex;align-items:center;gap:12px;padding:54px 20px 12px;border-bottom:2px solid var(--bg3);flex-shrink:0;}
+.mss-bk{font-size:22px;cursor:pointer;padding:4px;}
+.mss-t{font-size:16px;font-weight:800;}
+.mss-b{flex:1;overflow-y:auto;padding:16px 20px;scrollbar-width:none;}
+.mss-b::-webkit-scrollbar{display:none;}
+.msp{position:relative;padding-left:40px;}
+.msl{position:absolute;left:18px;top:0;bottom:0;width:4px;background:var(--bg3);border-radius:4px;}
+.mslf{position:absolute;left:18px;top:0;width:4px;background:var(--grn);border-radius:4px;z-index:1;}
+.msn{position:relative;z-index:2;display:flex;align-items:center;margin-bottom:22px;gap:14px;cursor:pointer;transition:transform .15s;}
+.msn:active{transform:scale(.97);}
+.msd{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;border:4px solid var(--bg3);background:var(--bg2);margin-left:-26px;transition:all .3s;}
+.msd.cl{background:var(--grn);border-color:var(--grn-d);box-shadow:0 3px 0 var(--grn-d);}
+.msd.ul{border-color:var(--gold);background:linear-gradient(135deg,rgba(245,166,35,.25),rgba(245,166,35,.08));box-shadow:0 3px 0 var(--gold-d),0 0 18px rgba(245,166,35,.2);animation:msPl 2s ease-in-out infinite;}
+@keyframes msPl{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+.msd.lk{opacity:.3;border-color:var(--pur-d);}
+.msd .lki{position:absolute;bottom:-3px;right:-3px;font-size:13px;background:var(--bg);border-radius:50%;padding:2px;}
+.msi{flex:1;}
+.msi-d{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
+.msi-n{font-size:13px;font-weight:800;margin:1px 0;}
+.msi-dt{font-size:10px;color:var(--dim);font-weight:600;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.mstag{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border-radius:6px;font-size:9px;font-weight:700;}
+.mstag.c{background:rgba(245,166,35,.12);color:var(--gold);}
+.mstag.v{background:rgba(123,79,191,.12);color:var(--pur-l);}
+.mstag.g{background:rgba(28,176,246,.12);color:var(--blu);}
+.msn.big .msd{width:64px;height:64px;font-size:28px;margin-left:-32px;}
+/* Effects */
+.fcoin{position:absolute;font-size:18px;pointer-events:none;z-index:300;animation:fCoin 1s ease-out forwards;}
+@keyframes fCoin{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-80px) scale(.5);opacity:0;}}
+.confetti{position:absolute;width:6px;height:6px;border-radius:2px;animation:cFall 1.2s ease-out forwards;}
+@keyframes cFall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1;}100%{transform:translateY(130px) rotate(720deg) scale(0);opacity:0;}}
+/* Tester */
+.tester{width:340px;background:#1e1e2e;border-radius:16px;padding:16px;border:2px solid #333;max-height:852px;overflow-y:auto;flex-shrink:0;scrollbar-width:thin;scrollbar-color:#444 transparent;}
+.tester::-webkit-scrollbar{width:4px;}.tester::-webkit-scrollbar-thumb{background:#444;border-radius:4px;}
+.tester h2{font-size:14px;font-weight:800;color:#ccc;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.ts{margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #333;}.ts:last-child{border-bottom:none;}
+.tsl{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.tg{display:flex;flex-wrap:wrap;gap:5px;}
+.tb{padding:7px 11px;border:none;border-radius:9px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;cursor:pointer;color:#fff;transition:all .15s;white-space:nowrap;}
+.tb:active{transform:scale(.93);}.tb.r{background:#e74c3c;}.tb.o{background:#e67e22;}.tb.y{background:#f39c12;color:#333;}.tb.g{background:#27ae60;}.tb.b{background:#2980b9;}.tb.p{background:#8e44ad;}.tb.gr{background:#555;}.tb.t{background:#16a085;}
+.tlog{margin-top:10px;background:#111;border-radius:10px;padding:8px;max-height:160px;overflow-y:auto;font-size:9px;font-family:monospace;color:#888;line-height:1.5;}
+.tlog .li{padding:2px 0;border-bottom:1px solid #1a1a2a;}.tlog .lt{color:#555;}.tlog .lok{color:#27ae60;}.tlog .ler{color:#e74c3c;}.tlog .lw{color:#f39c12;}
+.tt{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e74c3c;color:#fff;padding:8px 20px;border-radius:12px;font-size:12px;font-weight:700;z-index:9999;animation:ttIn .3s ease-out,ttOut .3s ease-in 2.5s forwards;pointer-events:none;}
+.tt.w{background:#f39c12;color:#333;}.tt.i{background:#2980b9;}.tt.ok{background:#27ae60;}
+@keyframes ttIn{0%{opacity:0;transform:translateX(-50%) translateY(-20px);}100%{opacity:1;transform:translateX(-50%) translateY(0);}}
+@keyframes ttOut{0%{opacity:1;}100%{opacity:0;}}
+</style>
 </head>
 <body>
-    <div class="app">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <h1 class="logo">Điểm danh</h1>
-            </div>
-            <div class="header-right">
-                <button class="btn-icon" id="soundBtn" title="Âm thanh">🔊</button>
-                <button class="btn-icon" id="rulesBtn" title="Thể lệ">ℹ️</button>
-                <button class="btn-icon" id="inventoryBtn" title="Kho quà">🎁 <span class="badge" id="inventoryCount">0</span></button>
-                <button class="btn-icon" id="exitBtn" title="Thoát">✕</button>
-            </div>
-        </header>
+<div class="layout">
+<div class="phone" id="app">
+  <div class="phone-bg"><div class="bg-stars" id="bgStars"></div></div>
 
-        <!-- Main Content -->
-        <main class="main">
-            <!-- State: Before Event Started -->
-            <div id="beforeEventState" class="event-state hidden">
-                <div class="event-header">
-                    <h2>Sự kiện Điểm danh 10 ngày</h2>
-                    <p>Sắp bắt đầu</p>
-                </div>
-                <div class="countdown-container">
-                    <p class="countdown-label">Sắp bắt đầu sau</p>
-                    <div class="countdown-timer" id="countdownBefore">
-                        <span class="countdown-part">00</span>:<span class="countdown-part">00</span>:<span class="countdown-part">00</span>
-                    </div>
-                </div>
-                <div class="event-locked">
-                    <p>🔒 Sự kiện chưa bắt đầu</p>
-                    <button class="btn-secondary" onclick="game.openModal('rulesModal')">Xem thể lệ</button>
-                </div>
-            </div>
-
-            <!-- State: Event Active -->
-            <div id="activeEventState" class="event-state">
-                <div class="event-header">
-                    <h2>Sự kiện Điểm danh 10 ngày</h2>
-                    <p>Hãy điểm danh mỗi ngày</p>
-                </div>
-
-                <div class="streak-bar">
-                    <span>🔥 Chuỗi liên tiếp: <strong id="streakCount">0</strong> ngày</span>
-                </div>
-
-                <div class="check-in-grid" id="checkInGrid">
-                    <!-- Day boxes will be generated here -->
-                </div>
-
-                <div class="event-countdown">
-                    <small>⏳ Sự kiện kết thúc sau: <span id="countdownActive">00:00:00</span></small>
-                </div>
-            </div>
-
-            <!-- State: Event Ended -->
-            <div id="endedEventState" class="event-state hidden">
-                <div class="event-header">
-                    <h2>Sự kiện đã kết thúc</h2>
-                    <p>Cảm ơn bạn đã tham gia</p>
-                </div>
-                <div class="event-ended-info">
-                    <p>🎉 Bạn đã nhận được <strong id="totalClaimed">0</strong>/10 quà</p>
-                    <p id="nextEventMessage" style="margin-top: 10px; font-size: 0.9em; color: #999;">Chờ sự kiện tiếp theo...</p>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-primary" onclick="game.openModal('inventoryModal')">Xem Kho quà</button>
-                    <button class="btn-secondary" onclick="game.closeEvent()">Đóng</button>
-                </div>
-            </div>
-        </main>
+  <div class="hdr">
+    <div class="hdr-streak" onclick="openMilestones()"><span>🔥</span><span id="hStreak">7</span></div>
+    <div class="hdr-icons">
+      <div class="hdr-ic" onclick="showOv('ovRules')">📜</div>
+      <div class="hdr-ic" onclick="openVault()">🎁<span class="dot" id="vBadge">6</span></div>
+      <div class="hdr-ic" onclick="openMilestones()">🏆<span class="dot" id="mBadge">1</span></div>
+      <div class="hdr-ic" onclick="openMissions()">📋</div>
+      <div class="hdr-ic" onclick="openSettings()">⚙️</div>
     </div>
+  </div>
 
-    <!-- Pop-up: Rules / Thể lệ -->
-    <div id="rulesModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-large">
-            <button class="modal-close" onclick="game.closeModal('rulesModal')">×</button>
-            
-            <div class="modal-body">
-                <h3>Cách chơi</h3>
-                
-                <div class="rules-content">
-                    <div class="rule-item">
-                        <strong>✓ Điểm danh mỗi ngày</strong>
-                        <p>Vào lúc quy định, nhấn vào ô quà "Hôm nay" để nhận phần thưởng</p>
-                    </div>
-                    <div class="rule-item">
-                        <strong>🔥 Duy trì chuỗi liên tiếp</strong>
-                        <p>Điểm danh liên tiếp để mở khoá quà hôm sau và tăng chuỗi</p>
-                    </div>
-                    <div class="rule-item">
-                        <strong>⭐ Mốc đặc biệt</strong>
-                        <p>Ngày 3, 7, 10 có quà đặc biệt. Hãy không bỏ lỡ!</p>
-                    </div>
-                    <div class="rule-item">
-                        <strong>🎁 Hoàn thành sự kiện</strong>
-                        <p>Điểm danh đủ 10 ngày để nhận bonus cuối cùng</p>
-                    </div>
-                    <div class="rule-item">
-                        <strong>⏰ Thời gian hợp lệ</strong>
-                        <p>Sự kiện kéo dài từ <span id="eventStartTime">--:-- --</span> đến <span id="eventEndTime">--:-- --</span></p>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="btn-primary" onclick="game.closeModal('rulesModal')">Đóng</button>
-                </div>
-            </div>
-        </div>
+  <div class="lobby">
+    <div class="mascot-wrap" onclick="tapMascot()">
+      <div class="mascot-ch" id="mascot">🐧</div>
+      <div class="mascot-bub" id="mascotBub">Xé lịch đi nào! 📅</div>
     </div>
-
-    <!-- Pop-up: Today's Reward / Quà hôm nay -->
-    <div id="todayRewardModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <button class="modal-close" onclick="game.closeModal('todayRewardModal')">×</button>
-            
-            <div class="modal-body">
-                <div class="event-banner">Sự kiện Điểm danh 10 ngày</div>
-                
-                <div class="reward-display">
-                    <div class="reward-icon" id="todayRewardIcon">🎁</div>
-                    <h3 id="todayRewardName">Quà hôm nay</h3>
-                </div>
-
-                <div class="streak-info-modal">
-                    <div class="streak-item">
-                        <span class="label">Ngày</span>
-                        <span class="value" id="modalDayNumber">1</span>/10
-                    </div>
-                    <div class="streak-item">
-                        <span class="label">Chuỗi liên tiếp</span>
-                        <span class="value" id="modalStreakDays">0</span> ngày
-                    </div>
-                </div>
-
-                <p class="reward-hint" id="rewardHint"></p>
-
-                <div class="modal-actions">
-                    <button class="btn-primary" id="claimBtn" onclick="game.claimReward()">Nhận quà</button>
-                    <button class="btn-secondary" onclick="game.openInventory()">Xem Kho quà</button>
-                </div>
-            </div>
-        </div>
+    <div class="streak-display">
+      <div class="streak-big" id="sBig">🔥 7 ngày liên tiếp</div>
+      <div class="streak-sub">Chuỗi check-in của bạn</div>
     </div>
-
-    <!-- Pop-up: Locked Day / Ngày khóa -->
-    <div id="lockedModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
-            <button class="modal-close" onclick="game.closeModal('lockedModal')">×</button>
-            
-            <div class="modal-body text-center">
-                <div class="locked-icon">🔒</div>
-                <h3>Chưa tới ngày</h3>
-                <p id="lockedText">Quay lại vào ngày tiếp theo để nhận quà này.</p>
-                
-                <div class="reward-preview">
-                    <p>Preview quà:</p>
-                    <div style="font-size: 2em;" id="lockedRewardIcon">🎁</div>
-                    <p id="lockedRewardName" style="margin-top: 5px;">---</p>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="btn-primary" onclick="game.closeModal('lockedModal')">Đóng</button>
-                    <button class="btn-secondary" onclick="game.setReminder()">Bật nhắc nhở</button>
-                </div>
-            </div>
-        </div>
+    <div class="next-ms" onclick="openMilestones()">
+      <span class="nm-ic" id="nmIc">🎟️</span>
+      <div class="nm-info"><div class="nm-t" id="nmT"></div><div class="nm-s" id="nmS"></div><div class="nm-bar"><div class="nm-fill" id="nmF" style="width:100%"></div></div></div>
+      <span class="nm-arr">›</span>
     </div>
-
-    <!-- Pop-up: Already Claimed / Đã nhận rồi -->
-    <div id="alreadyClaimedModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
-            <button class="modal-close" onclick="game.closeModal('alreadyClaimedModal')">×</button>
-            
-            <div class="modal-body text-center">
-                <div class="success-icon">✓</div>
-                <h3>Bạn đã nhận quà này rồi</h3>
-                <p id="claimedText">Xem lại trong Kho quà hoặc quay lại điểm danh.</p>
-
-                <div class="modal-actions">
-                    <button class="btn-primary" onclick="game.openInventory()">Xem Kho quà</button>
-                    <button class="btn-secondary" onclick="game.closeModal('alreadyClaimedModal')">Đóng</button>
-                </div>
-            </div>
-        </div>
+    <div class="strip-area">
+      <div class="strip-label">📅 Lịch điểm danh</div>
+      <div class="strip" id="strip"></div>
+      <div class="strip-dots" id="sDots"></div>
     </div>
+  </div>
 
-    <!-- Pop-up: Confirmation / Chúc mừng -->
-    <div id="confirmationModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
-            <button class="modal-close" onclick="game.closeModal('confirmationModal')">×</button>
-            
-            <div class="modal-body text-center">
-                <div class="success-icon">✓</div>
-                <h3>Chúc mừng!</h3>
-                <p>Bạn đã nhận <strong id="confirmRewardName">quà</strong></p>
-                
-                <div class="confirmation-details">
-                    <p>🔥 Chuỗi hiện tại: <strong id="confirmStreakDays">0</strong> ngày</p>
-                    <p id="confirmRemaining" style="margin-top: 8px; font-size: 0.9em; color: #666;"></p>
-                </div>
+  <div class="bot"><button class="ok-btn" id="okBtn" onclick="onOk()">Điểm danh</button></div>
+  <div id="popups"></div>
+  <div class="mss" id="msScr"><div class="mss-h"><span class="mss-bk" onclick="closeMs()">&#8592;</span><span class="mss-t">&#127942; Cột mốc phần thưởng</span></div><div class="mss-b" id="msBody"></div></div>
+</div>
+<div class="tester" id="testerPanel"></div>
+</div>
+<script src="data:," id="mainScript"></script>
+<script>
+// ===== DATA =====
+var STREAK=7,CUR=7,done=false,vaultFilter='all',makeupCredits=1,netMode='ok',_pendingMs=null;
+var MS=[
+  {day:1,icon:'🪙',name:'+50 Coin',tags:['c'],rw:[{i:'🪙',a:'+50 Coin',t:'Điểm LynkiD'}],st:'claimed'},
+  {day:3,icon:'🎮',name:'+2 Lượt chơi',tags:['c','g'],rw:[{i:'🪙',a:'+100 Coin',t:'Điểm LynkiD'},{i:'🎮',a:'+2 Lượt',t:'Lượt chơi game'}],st:'claimed'},
+  {day:7,icon:'🎟️',name:'Voucher 10K',tags:['c','v','g'],rw:[{i:'🪙',a:'+200 Coin',t:'Điểm LynkiD'},{i:'🎟️',a:'1 Voucher',t:'E-Voucher 10K'},{i:'🎮',a:'+3 Lượt',t:'Lượt chơi game'}],st:'unlocked',big:1},
+  {day:14,icon:'🪙',name:'+500 Coin',tags:['c','g'],rw:[{i:'🪙',a:'+500 Coin',t:'Điểm LynkiD'},{i:'🎮',a:'+5 Lượt',t:'Lượt chơi game'}],st:'locked'},
+  {day:21,icon:'🎟️',name:'Voucher 20K',tags:['c','v'],rw:[{i:'🎟️',a:'1 Voucher',t:'E-Voucher 20K'},{i:'🪙',a:'+300 Coin',t:'Điểm LynkiD'}],st:'locked'},
+  {day:30,icon:'🏆',name:'Hộp quà Bạc',tags:['c','v','g'],rw:[{i:'🪙',a:'+1,000 Coin',t:'Điểm LynkiD'},{i:'🎟️',a:'1 Voucher',t:'E-Voucher 50K'},{i:'🎮',a:'+10 Lượt',t:'Lượt chơi game'}],st:'locked',big:1},
+  {day:60,icon:'💎',name:'Hộp quà Vàng',tags:[],rw:[],st:'locked',big:1,unk:1},
+  {day:90,icon:'👑',name:'Hộp quà Kim Cương',tags:[],rw:[],st:'locked',big:1,unk:1}
+];
+var DAYS=[],VAULT=[
+  {i:'🪙',n:'+150đ',desc:'Coin LynkiD',t:'01/04 08:12',c:'coin',act:'Đã cộng'},
+  {i:'🪙',n:'+100đ',desc:'Coin LynkiD',t:'02/04 09:05',c:'coin',act:'Đã cộng'},
+  {i:'☕',n:'Highlands x2',desc:'Mua 2 tặng 1 đồ uống',t:'03/04 07:45',c:'voucher',act:'Dùng ngay'},
+  {i:'🛒',n:'Shopee 15k',desc:'Voucher giảm 15k đơn 99k+',t:'03/04 07:45',c:'voucher',act:'Dùng ngay'},
+  {i:'🎮',n:'x1 Lượt chơi',desc:'Game X trong LynkiD',t:'04/04 10:30',c:'game',act:'Chơi ngay'},
+  {i:'🪙',n:'+100đ',desc:'Coin LynkiD',t:'05/04 08:00',c:'coin',act:'Đã cộng'},
+  {i:'🪙',n:'+100đ',desc:'Coin LynkiD',t:'06/04 09:15',c:'coin',act:'Đã cộng'}
+],VT={coins:1250,vouchers:14,plays:3};
+var MISSIONS=[
+  {ic:'📱',tt:'Đăng nhập App LynkiD',ds:'3 ngày liên tiếp',p:2,t:3,rw:'+1 lượt bù',dn:0},
+  {ic:'💳',tt:'Giao dịch NFC dưới 50k',ds:'1 giao dịch NFC',p:0,t:1,rw:'+1 lượt bù',dn:0},
+  {ic:'✅',tt:'Giao dịch MBN dưới 50k',ds:'1 giao dịch MBN',p:1,t:1,rw:'+1 lượt bù',dn:1}
+];
+var mascotPh=['Xé lịch đi nào! 📅','Chuỗi đẹp lắm! 🔥','Cố lên nào! 💪','Quà đang chờ! 🎁','Streak '+STREAK+' rồi! 🎉'];
+for(var _i=1;_i<=30;_i++){var _ms=MS.find(function(m){return m.day===_i;});DAYS.push({day:_i,st:_i<CUR?'checked':_i===CUR?'today':'future',isMs:!!_ms,icon:_ms?_ms.icon:(_i%3===0?'🎮':_i%5===0?'🪙':'🎁'),label:_ms?_ms.name:(_i%3===0?'Lượt chơi':_i%5===0?'Coin':'Quà'),rw:_ms?_ms.rw:[{i:'🪙',a:'+20 Coin',t:'Điểm LynkiD'}]});}
 
-                <div class="modal-actions">
-                    <button class="btn-primary" onclick="game.closeModal('confirmationModal')">OK</button>
-                    <button class="btn-secondary" onclick="game.openInventory()">Xem Kho quà</button>
-                </div>
-            </div>
-        </div>
-    </div>
+// ===== BG STARS =====
+(function(){var c=document.getElementById('bgStars');for(var i=0;i<30;i++){var s=document.createElement('div');s.className='bg-star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*3+'s';s.style.animationDuration=(2+Math.random()*3)+'s';c.appendChild(s);}})();
 
-    <!-- Pop-up: Error / Lỗi -->
-    <div id="errorModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
-            <button class="modal-close" onclick="game.closeModal('errorModal')">×</button>
-            
-            <div class="modal-body text-center">
-                <div class="error-icon">⚠️</div>
-                <h3 id="errorTitle">Lỗi</h3>
-                <p id="errorMessage">Đã xảy ra lỗi. Vui lòng thử lại.</p>
+// ===== POPUPS HTML =====
+function rwHtml(rw){return rw.map(function(r){return '<div class="rr"><span class="ri">'+r.i+'</span><div class="rt"><div class="ra">'+r.a+'</div><div class="ry">'+r.t+'</div></div></div>';}).join('');}
+document.getElementById('popups').innerHTML=[
+  '<div class="ov" id="ovRw"><div class="gf"><div class="gf-top">🎉</div><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">CHÚC MỪNG!</div><div class="gf-body"><div style="font-size:38px;margin-bottom:4px" id="rwIc"></div><div style="font-size:14px;font-weight:800;color:var(--td)" id="rwTt"></div><div style="font-size:10px;color:var(--pur);font-weight:600;margin-bottom:10px" id="rwSb"></div><div id="rwLs"></div><button class="gb gold" onclick="closeOv(\'ovRw\')">Nhận thưởng</button><button class="gb pur" onclick="closeOv(\'ovRw\')">📤 Chia sẻ</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovRw\')">✕</div></div></div>',
+  '<div class="ov" id="ovNr"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">ĐIỂM DANH</div><div class="gf-body"><div style="font-size:44px;margin-bottom:4px">🐧</div><div style="font-size:14px;font-weight:800;color:var(--td)">Điểm danh thành công!</div><div style="font-size:10px;color:var(--pur);font-weight:600;margin:4px 0 10px" id="nrSb"></div><button class="gb gold" onclick="closeOv(\'ovNr\')">Tiếp tục</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovNr\')">✕</div></div></div>',
+  '<div class="ov" id="ovAl"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">CHÀO BẠN</div><div class="gf-body"><div style="font-size:44px;margin-bottom:4px">📅</div><div style="font-size:13px;font-weight:800;color:var(--td)">Bạn đã điểm danh rồi hôm nay</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:6px 0 12px">Quay lại vào ngày mai nhé!</div><button class="gb gold" onclick="closeOv(\'ovAl\')">OK</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovAl\')">✕</div></div></div>',
+  '<div class="ov" id="ovDd"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl" id="ddTt"></div><div class="gf-body"><div style="font-size:38px;margin-bottom:4px" id="ddIc"></div><div style="font-size:13px;font-weight:800;color:var(--td)" id="ddNm"></div><div style="font-size:10px;color:var(--pur);font-weight:600;margin:4px 0 10px" id="ddSb"></div><div id="ddRw"></div><button class="gb gold" onclick="closeOv(\'ovDd\')">OK</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovDd\')">✕</div></div></div>',
+  '<div class="ov" id="ovMu"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">ĐIỂM DANH BÙ</div><div class="gf-body"><div style="font-size:44px;margin-bottom:4px">🔄</div><div style="font-size:13px;font-weight:800;color:var(--td)" id="muTt"></div><div style="font-size:10px;color:var(--pur);font-weight:600;margin:4px 0 10px" id="muSb"></div><div id="muRw"></div><button class="gb gold" id="muBtn" onclick="doMakeup()">✅ Dùng 1 lượt bù</button><button class="gb ghost" onclick="closeOv(\'ovMu\')">Để sau</button><div style="font-size:9px;color:#999;font-weight:600;margin-top:6px" id="muLeft"></div></div></div></div><div class="gf-x" onclick="closeOv(\'ovMu\')">✕</div></div></div>',
+  '<div class="ov" id="ovMsR"><div class="gf"><div class="gf-top" id="msRTop">🏆</div><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">🎉 CỘT MỐC ĐẠT ĐƯỢC!</div><div class="gf-body"><div style="font-size:52px;margin-bottom:4px" id="msRIc"></div><div style="font-size:16px;font-weight:900;color:var(--td)" id="msRTt"></div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:4px 0 10px" id="msRSb"></div><div id="msRRw"></div><button class="gb gold" onclick="claimMsPopup()">🎁 Nhận thưởng</button><button class="gb ghost" onclick="closeOv(\'ovMsR\')">Để sau</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovMsR\')">✕</div></div></div>',
+  '<div class="ov" id="ovV"><div class="gf"><div class="gf-top">👑</div><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">QUÀ CỦA TÔI</div><div class="gf-body" style="padding:12px 10px"><div class="vs" id="vSum"></div><div class="vtabs" id="vTb"></div><div class="vsc" id="vLs"></div></div></div></div><div class="gf-x" onclick="closeOv(\'ovV\')">✕</div></div></div>',
+  '<div class="ov" id="ovVE"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">KHO QUÀ</div><div class="gf-body"><div style="font-size:44px;margin-bottom:6px;opacity:.5">📦</div><p style="font-size:12px;font-weight:600;color:var(--dim)">Điểm danh ngay để nhận quà!</p><button class="gb gold" onclick="closeOv(\'ovVE\')">Đi điểm danh</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovVE\')">✕</div></div></div>',
+  '<div class="ov" id="ovSet"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">CÀI ĐẶT</div><div class="gf-body" style="text-align:left"><div class="trow"><div class="trl"><span>🎵</span> Nhạc nền</div><div class="tsw on" onclick="this.classList.toggle(\'on\')"></div></div><div class="trow"><div class="trl"><span>🔊</span> Âm thanh</div><div class="tsw on" onclick="this.classList.toggle(\'on\')"></div></div><div class="trow"><div class="trl"><span>🔔</span> Thông báo</div><div class="tsw on" onclick="this.classList.toggle(\'on\')"></div></div></div></div></div><div class="gf-x" onclick="closeOv(\'ovSet\')">✕</div></div></div>',
+  '<div class="ov" id="ovMi"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">NHIỆM VỤ BÙ LƯỢT</div><div class="gf-body" style="padding:12px 10px"><div style="font-size:10px;color:var(--pur);font-weight:600;margin-bottom:8px">Hoàn thành nhiệm vụ để nhận lượt bù</div><div id="miLs"></div><div style="font-size:9px;color:#999;font-weight:600;margin-top:6px">Lượt bù hiện có: <b style="color:var(--gold-d)" id="miLeft">1</b></div></div></div></div><div class="gf-x" onclick="closeOv(\'ovMi\')">✕</div></div></div>',
+  '<div class="ov" id="ovMsD"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl" id="msDTt"></div><div class="gf-body"><div style="font-size:44px;margin-bottom:4px" id="msDIc"></div><div style="font-size:13px;font-weight:800;color:var(--td)" id="msDNm"></div><div style="font-size:10px;color:var(--pur);font-weight:600;margin:4px 0 10px" id="msDSb"></div><div id="msDRw"></div><button class="gb gold" onclick="closeOv(\'ovMsD\')">Đã hiểu</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovMsD\')">✕</div></div></div>',
+  '<div class="ov" id="ovSW"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">⚠️ CẢNH BÁO</div><div class="gf-body"><div style="font-size:44px;margin-bottom:4px">💔</div><div style="font-size:13px;font-weight:800;color:var(--td)">Chuỗi streak sắp mất!</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:4px 0 12px">Điểm danh ngay để giữ chuỗi!</div><button class="gb gold" onclick="closeOv(\'ovSW\')">Điểm danh ngay</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovSW\')">✕</div></div></div>',
+  '<div class="ov" id="ovErrNet"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">MẤT KẾT NỐI</div><div class="gf-body"><div style="font-size:52px;margin-bottom:8px">📡</div><div style="font-size:14px;font-weight:800;color:var(--td)">Không có kết nối mạng</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:6px 0 14px">Vui lòng kiểm tra kết nối internet của bạn và thử lại.</div><button class="gb gold" onclick="closeOv(\'ovErrNet\');retryCheckin()">🔄 Thử lại</button><button class="gb ghost" onclick="closeOv(\'ovErrNet\')">Đóng</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovErrNet\')">✕</div></div></div>',
+  '<div class="ov" id="ovErrSrv"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">BẢO TRÌ HỆ THỐNG</div><div class="gf-body"><div style="font-size:52px;margin-bottom:8px">🔧</div><div style="font-size:14px;font-weight:800;color:var(--td)">Hệ thống đang bảo trì</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:6px 0 6px">Chúng tôi đang nâng cấp hệ thống để mang đến trải nghiệm tốt hơn.</div><div style="font-size:10px;color:#999;font-weight:600;margin-bottom:14px">Dự kiến hoàn tất: <b style="color:var(--org)">30 phút</b></div><button class="gb gold" onclick="closeOv(\'ovErrSrv\');retryCheckin()">🔄 Thử lại</button><button class="gb ghost" onclick="closeOv(\'ovErrSrv\')">Đóng</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovErrSrv\')">✕</div></div></div>',
+  '<div class="ov" id="ovErrTime"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">HẾT THỜI GIAN</div><div class="gf-body"><div style="font-size:52px;margin-bottom:8px">⏱️</div><div style="font-size:14px;font-weight:800;color:var(--td)">Yêu cầu hết thời gian chờ</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:6px 0 14px">Máy chủ phản hồi quá lâu. Vui lòng thử lại sau.</div><button class="gb gold" onclick="closeOv(\'ovErrTime\');retryCheckin()">🔄 Thử lại</button><button class="gb ghost" onclick="closeOv(\'ovErrTime\')">Đóng</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovErrTime\')">✕</div></div></div>',
+  '<div class="ov" id="ovErrEnd"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">SỰ KIỆN KẾT THÚC</div><div class="gf-body"><div style="font-size:52px;margin-bottom:8px">🏁</div><div style="font-size:14px;font-weight:800;color:var(--td)">Sự kiện đã kết thúc</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:6px 0 6px">Sự kiện Daily Check-in tháng này đã kết thúc. Hẹn gặp lại bạn vào tháng sau!</div><div style="font-size:10px;color:#999;font-weight:600;margin-bottom:14px">Sự kiện mới bắt đầu: <b style="color:var(--grn)">01/05/2026</b></div><button class="gb gold" onclick="closeOv(\'ovErrEnd\')">Đã hiểu</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovErrEnd\')">✕</div></div></div>',
+  '<div class="ov" id="ovLoading"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">ĐANG XỬ LÝ</div><div class="gf-body"><div style="font-size:44px;margin-bottom:8px;animation:mBob 1.5s ease-in-out infinite">⏳</div><div style="font-size:13px;font-weight:800;color:var(--td)">Vui lòng chờ...</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:6px 0 10px">Đang kết nối đến máy chủ</div></div></div></div></div></div>',
+  '<div class="ov" id="ovRules"><div class="gf"><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">📜 THỂ LỆ</div><div class="gf-body" style="text-align:left;font-size:11px;color:var(--td);max-height:400px;overflow-y:auto"><div style="font-weight:800;font-size:14px;text-align:center;margin-bottom:10px">Thể lệ Daily Check-in</div><div style="margin-bottom:8px"><b>1. Cách tham gia:</b><br>Mở app LynkiD mỗi ngày và xé lịch để điểm danh. Mỗi ngày chỉ được điểm danh 1 lần.</div><div style="margin-bottom:8px"><b>2. Phần thưởng:</b><br>• Điểm danh hàng ngày: nhận LynkiD Coin, E-Voucher hoặc lượt chơi game<br>• Cột mốc 1, 3, 7, 14, 21, 30, 60, 90 ngày: phần thưởng giá trị cao hơn<br>• Hộp quà đặc biệt sẽ được mở trong game Blinbox</div><div style="margin-bottom:8px"><b>3. Điểm danh bù:</b><br>Hoàn thành nhiệm vụ để nhận lượt bù. Mỗi lượt bù cho phép điểm danh lại 1 ngày đã bỏ lỡ.</div><div style="margin-bottom:8px"><b>4. Streak (chuỗi):</b><br>Điểm danh liên tiếp để duy trì streak. Bỏ lỡ 1 ngày sẽ mất streak.</div><div><b>5. Thời gian:</b><br>Sự kiện diễn ra từ 01/04/2026 đến 30/04/2026. Phần thưởng chưa nhận sẽ hết hạn sau khi sự kiện kết thúc.</div></div></div></div><div class="gf-x" onclick="closeOv(\'ovRules\')">✕</div></div></div>',
+  '<div class="ov" id="ovBlinbox"><div class="gf"><div class="gf-top">🎰</div><div class="gf-bdr"><div class="gf-inn"><div class="gf-ttl">🎁 HỘP QUÀ ĐẶC BIỆT</div><div class="gf-body"><div style="font-size:56px;margin-bottom:8px">🎰</div><div style="font-size:16px;font-weight:900;color:var(--td)" id="bbTitle">Bạn nhận được Hộp quà!</div><div style="font-size:11px;color:var(--pur);font-weight:600;margin:6px 0 14px" id="bbSub">Mở hộp quà trong game Blinbox để nhận phần thưởng bí ẩn!</div><button class="gb gold" onclick="gotoBlinbox()">🎰 Mở Blinbox ngay</button><button class="gb ghost" onclick="closeOv(\'ovBlinbox\')">Để sau</button></div></div></div><div class="gf-x" onclick="closeOv(\'ovBlinbox\')">✕</div></div></div>'
+].join('');
 
-                <div class="modal-actions">
-                    <button class="btn-primary" id="errorRetryBtn" onclick="game.retryLastAction()">Thử lại</button>
-                    <button class="btn-secondary" onclick="game.closeModal('errorModal')">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
+// ===== TESTER HTML =====
+document.getElementById('testerPanel').innerHTML='<h2><span>🧪</span> Tester Panel</h2>'+
+'<div class="ts"><div class="tsl">📅 Trạng thái</div><div class="tg"><button class="tb g" onclick="T.reset()">🔄 Reset</button><button class="tb b" onclick="T.setDay(1)">Ngày 1</button><button class="tb b" onclick="T.setDay(7)">Ngày 7</button><button class="tb b" onclick="T.setDay(14)">Ngày 14</button><button class="tb b" onclick="T.setDay(30)">Ngày 30</button><button class="tb p" onclick="T.setStreak(0)">Streak=0</button><button class="tb p" onclick="T.setStreak(30)">Streak=30</button></div></div>'+
+'<div class="ts"><div class="tsl">❌ Thiếu ngày / Bù</div><div class="tg"><button class="tb o" onclick="T.miss(3)">Bỏ lỡ ngày 3</button><button class="tb o" onclick="T.miss(5)">Bỏ lỡ ngày 5</button><button class="tb o" onclick="T.missMulti([2,4,6])">Bỏ lỡ 2,4,6</button><button class="tb r" onclick="T.missStreak()">Mất streak</button><button class="tb t" onclick="T.addMakeup(3)">+3 lượt bù</button><button class="tb t" onclick="T.addMakeup(0)">0 lượt bù</button></div></div>'+
+'<div class="ts"><div class="tsl">🌐 Lỗi mạng / Hệ thống</div><div class="tg"><button class="tb r" onclick="T.net(\'error\')">📡 Mất kết nối</button><button class="tb r" onclick="T.net(\'server\')">🔧 Bảo trì</button><button class="tb r" onclick="T.net(\'timeout\')">⏱️ Timeout</button><button class="tb o" onclick="T.net(\'slow\')">🐌 Mạng chậm</button><button class="tb r" onclick="T.net(\'ended\')">🏁 Sự kiện kết thúc</button><button class="tb g" onclick="T.net(\'ok\')">✅ Bình thường</button></div></div>'+
+'<div class="ts"><div class="tsl">🎁 Phần thưởng</div><div class="tg"><button class="tb y" onclick="T.setRw(\'none\')">Không quà</button><button class="tb y" onclick="T.setRw(\'coin\')">Coin</button><button class="tb y" onclick="T.setRw(\'voucher\')">Voucher</button><button class="tb y" onclick="T.setRw(\'multi\')">Nhiều quà</button><button class="tb gr" onclick="T.emptyVault()">Kho trống</button><button class="tb t" onclick="T.fullVault()">Kho đầy</button></div></div>'+
+'<div class="ts"><div class="tsl">🏆 Cột mốc</div><div class="tg"><button class="tb p" onclick="T.msAll()">Tất cả claimed</button><button class="tb p" onclick="T.msNone()">Tất cả locked</button><button class="tb p" onclick="T.msNext()">Mở khóa tiếp</button></div></div>'+
+'<div class="ts"><div class="tsl">⚡ Edge cases</div><div class="tg"><button class="tb gr" onclick="T.dblCheckin()">Double check-in</button><button class="tb gr" onclick="T.longName()">Tên quà dài</button><button class="tb p" onclick="T.showBlinbox()">🎰 Blinbox popup</button><button class="tb b" onclick="T.showRules()">📜 Thể lệ</button></div></div>'+
+'<div class="ts"><div class="tsl">📝 Log</div><div class="tlog" id="tLog"><div class="li"><span class="lt">[init]</span> Ready</div></div></div>';
 
-    <!-- Pop-up: Inventory / Kho quà -->
-    <div id="inventoryModal" class="modal hidden">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-large">
-            <button class="modal-close" onclick="game.closeModal('inventoryModal')">×</button>
-            
-            <div class="modal-body">
-                <h3>Kho quà</h3>
-                
-                <div class="inventory-container" id="inventoryContainer">
-                    <!-- Items will be generated here -->
-                </div>
+// ===== HELPERS =====
+function showOv(id){document.getElementById(id).classList.add('show');}
+function closeOv(id){document.getElementById(id).classList.remove('show');}
+function $(id){return document.getElementById(id);}
+function confetti(el){if(!el)return;var cols=['#58CC02','#FFC800','#CE82FF','#1CB0F6','#FF4B4B','#FF9600'];for(var i=0;i<25;i++){var c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.top=Math.random()*20+'%';c.style.background=cols[~~(Math.random()*cols.length)];c.style.animationDelay=Math.random()*.5+'s';c.style.animationDuration=(.8+Math.random()*.6)+'s';el.appendChild(c);setTimeout(function(x){return function(){x.remove();};}(c),1500);}}
+function spawnCoin(){var c=document.createElement('div');c.className='fcoin';c.textContent='🪙';c.style.left=(140+Math.random()*120)+'px';c.style.top=(350+Math.random()*60)+'px';$('app').appendChild(c);setTimeout(function(){c.remove();},1000);}
 
-                <div class="modal-actions">
-                    <button class="btn-primary" onclick="game.closeModal('inventoryModal')">Quay lại</button>
-                </div>
-            </div>
-        </div>
-    </div>
+// ===== NEXT MILESTONE =====
+function updateNM(){
+  var n=MS.find(function(m){return m.st==='unlocked';})||MS.find(function(m){return m.st==='locked';});
+  if(!n)return;
+  $('nmIc').textContent=n.icon;
+  $('nmT').textContent='Cột mốc: Ngày '+n.day+' — '+(n.unk?'???':n.name);
+  var r=Math.max(0,n.day-CUR);
+  $('nmS').textContent=r===0?'Đã đạt! Nhận ngay →':'Còn '+r+' ngày nữa';
+  $('nmF').style.width=Math.min(100,(CUR/n.day)*100)+'%';
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+// ===== STRIP =====
+var _tearClean=null;
+function renderStrip(){
+  var s=$('strip');s.innerHTML='';
+  DAYS.forEach(function(d){
+    var c=document.createElement('div');
+    var st=(d.st==='today'&&done)?'checked':d.st;
+    c.className='dc '+st+(d.isMs?' ms':'');
+    var lc=d.st==='today'?'dc-lbl today':'dc-lbl';
+    var lt=d.st==='today'?'Hôm nay':d.day===CUR+1?'Ngày mai':'Ngày '+d.day;
+    var body='';
+    if(st==='checked'){
+      body='<span class="dc-ico">✅</span><span class="dc-rw">'+d.label+'</span>';
+    }else if(st==='today'){
+      body='<div class="reveal"><span class="dc-ico">'+d.icon+'</span><span class="dc-rw">'+d.label+'</span></div><div class="tear-page" id="tearPage"><div class="tear-day">'+d.day+'</div><div class="tear-sub">Hôm nay</div><div class="tear-hint">↕ Kéo để xé</div></div>';
+    }else if(st==='missed'){
+      body='<span class="dc-ico">❌</span><span class="dc-rw">Bỏ lỡ</span>';
+    }else{
+      body='<span class="dc-ico">❓</span><span class="dc-rw">'+d.label+'</span>';
+    }
+    c.innerHTML='<div class="'+lc+'">'+lt+'</div><div class="dc-body">'+body+'</div>'+(d.isMs?'<span class="ms-star">★</span>':'');
+    // Click handlers
+    if(st==='missed'){c.onclick=function(){showMakeup(d);};}
+    else if(st==='checked'||st==='future'){c.onclick=function(){showDayDetail(d);};}
+    s.appendChild(c);
+  });
+  requestAnimationFrame(function(){var idx=DAYS.findIndex(function(d){return d.day===CUR;});s.scrollLeft=Math.max(0,(idx-1)*80);});
+  if(!done)setupTear();
+  setupDrag(s);
+  updateDots();
+}
+
+function updateDots(){
+  var s=$('strip'),dots=$('sDots');
+  var pages=Math.ceil(30/4);dots.innerHTML='';
+  for(var i=0;i<pages;i++){var d=document.createElement('div');d.className='s-dot'+(i===Math.floor((CUR-1)/4)?' on':'');dots.appendChild(d);}
+  s.onscroll=function(){var pg=Math.floor(s.scrollLeft/320);dots.querySelectorAll('.s-dot').forEach(function(d,i){d.classList.toggle('on',i===pg);});};
+}
+
+// Mouse drag for desktop
+function setupDrag(el){
+  var isD=false,sx,sl,moved;
+  el.onmousedown=function(e){if(e.target.closest('.tear-page'))return;isD=true;moved=false;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.style.scrollSnapType='none';el.style.cursor='grabbing';e.preventDefault();};
+  el.onmouseleave=function(){if(!isD)return;isD=false;el.style.scrollSnapType='';el.style.cursor='grab';};
+  el.onmouseup=function(e){if(!isD)return;isD=false;el.style.scrollSnapType='';el.style.cursor='grab';if(!moved){var card=e.target.closest('.dc');if(card)card.click();}};
+  el.onmousemove=function(e){if(!isD)return;e.preventDefault();var x=e.pageX-el.offsetLeft;var w=(x-sx)*1.5;if(Math.abs(w)>5)moved=true;el.scrollLeft=sl-w;};
+  el.onwheel=function(e){if(Math.abs(e.deltaX)>Math.abs(e.deltaY))return;e.preventDefault();el.scrollLeft+=e.deltaY;};
+}
+
+// ===== DAY DETAIL =====
+function showDayDetail(d){
+  $('ddTt').textContent='NGÀY '+d.day;
+  $('ddIc').textContent=d.st==='checked'||done?'✅':'🔮';
+  $('ddNm').textContent=d.label;
+  $('ddSb').textContent=d.st==='checked'?'Đã điểm danh ✓':d.st==='future'?'Chưa đến ngày này':'Đã điểm danh ✓';
+  $('ddRw').innerHTML=rwHtml(d.rw);
+  showOv('ovDd');
+}
+
+// ===== MAKEUP (điểm danh bù) =====
+var _muDay=null;
+function showMakeup(d){
+  _muDay=d;
+  $('muTt').textContent='Bù ngày '+d.day;
+  $('muSb').textContent=makeupCredits>0?'Bạn có '+makeupCredits+' lượt bù. Sử dụng để điểm danh ngày này?':'Bạn hết lượt bù! Hoàn thành nhiệm vụ để nhận thêm.';
+  $('muRw').innerHTML=rwHtml(d.rw);
+  $('muBtn').style.display=makeupCredits>0?'':'none';
+  $('muLeft').textContent='Lượt bù còn lại: '+makeupCredits;
+  showOv('ovMu');
+}
+function doMakeup(){
+  if(!_muDay||makeupCredits<=0)return;
+  makeupCredits--;
+  _muDay.st='checked';
+  closeOv('ovMu');
+  renderStrip();
+  // Show reward
+  $('rwIc').textContent='🔄';
+  $('rwTt').textContent='Điểm danh bù thành công!';
+  $('rwSb').textContent='Ngày '+_muDay.day+' đã được bù';
+  $('rwLs').innerHTML=rwHtml(_muDay.rw);
+  showOv('ovRw');confetti($('#ovRw .gf-body')||document.querySelector('#ovRw .gf-body'));
+  _muDay=null;
+}
+
+// ===== TEAR =====
+function setupTear(){
+  var pg=$('tearPage');if(!pg)return;
+  if(_tearClean)_tearClean();
+  var sy=0,cy=0,dr=false;
+  function start(e){dr=true;sy=e.touches?e.touches[0].clientY:e.clientY;pg.style.transition='none';}
+  function move(e){if(!dr)return;e.preventDefault();cy=(e.touches?e.touches[0].clientY:e.clientY)-sy;var p=Math.min(1,Math.abs(cy)/100);pg.style.transform='perspective(400px) rotateX('+(cy<0?-1:1)*p*60+'deg) scale('+(1-p*.2)+')';pg.style.opacity=1-p*.6;}
+  function end(){if(!dr)return;dr=false;if(Math.abs(cy)>70){pg.style.transition='transform .4s cubic-bezier(.4,0,.2,1),opacity .3s';var dir=cy<0?-1:1;pg.style.transform='perspective(400px) rotateX('+dir*-120+'deg) translateY('+dir*50+'px) scale(.5)';pg.style.opacity='0';setTimeout(doCheckin,400);}else{pg.style.transition='transform .3s,opacity .3s';pg.style.transform='';pg.style.opacity='1';}cy=0;}
+  pg.addEventListener('touchstart',start,{passive:true});pg.addEventListener('touchmove',move,{passive:false});pg.addEventListener('touchend',end);
+  pg.addEventListener('mousedown',start);window.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+  _tearClean=function(){window.removeEventListener('mousemove',move);window.removeEventListener('mouseup',end);};
+}
+
+function onOk(){if(done){showOv('ovAl');return;}var pg=$('tearPage');if(pg){pg.classList.add('tearing');setTimeout(doCheckin,500);}}
+
+function doCheckin(){
+  if(done)return;done=true;
+  $('banner').textContent='Nhận thưởng ngày mai nhé! 🎉';$('banner').classList.add('success');
+  $('okBtn').classList.add('done');$('okBtn').textContent='✅ Đã điểm danh';
+  var mc=$('mascot');mc.classList.add('happy');setTimeout(function(){mc.classList.remove('happy');},700);
+  var today=DAYS.find(function(d){return d.day===CUR;});
+  var now=new Date().toTimeString().slice(0,5);
+  today.rw.forEach(function(r){VAULT.push({i:r.i,n:r.a,desc:r.t,t:'07/04 '+now,c:r.i==='🪙'?'coin':r.i==='🎟️'?'voucher':'game',act:r.i==='🪙'?'Đã cộng':r.i==='🎟️'?'Dùng ngay':'Chơi ngay'});});
+  VT.coins+=20;
+  for(var i=0;i<5;i++)setTimeout(spawnCoin,i*100);
+  $('vBadge').textContent=VAULT.length;
+  renderStrip();updateNM();
+
+  // Check milestone
+  var hitMs=MS.find(function(m){return m.day===CUR&&m.st==='unlocked';});
+  if(hitMs){
+    _pendingMs=MS.indexOf(hitMs);
+    $('msRTop').textContent=hitMs.icon;$('msRIc').textContent=hitMs.icon;
+    $('msRTt').textContent='Cột mốc ngày '+hitMs.day+'!';
+    $('msRSb').textContent='Chúc mừng! Bạn đã đạt cột mốc '+hitMs.name;
+    $('msRRw').innerHTML=rwHtml(hitMs.rw);
+    showOv('ovMsR');confetti(document.querySelector('#ovMsR .gf-body'));
+    for(var j=0;j<8;j++)setTimeout(spawnCoin,j*80);
+  }else if(today.rw.length>0){
+    $('rwIc').textContent=today.rw[0].i;$('rwTt').textContent='Check-in thành công!';
+    $('rwSb').textContent='Ngày '+CUR+' — Chuỗi '+STREAK+' ngày 🔥';
+    $('rwLs').innerHTML=rwHtml(today.rw);
+    showOv('ovRw');confetti(document.querySelector('#ovRw .gf-body'));
+  }else{$('nrSb').textContent='Ngày '+CUR+' — Chuỗi '+STREAK+' ngày 🔥';showOv('ovNr');}
+}
+
+function claimMsPopup(){
+  closeOv('ovMsR');
+  if(_pendingMs!==null)claimMs(_pendingMs);_pendingMs=null;
+}
+
+// ===== MASCOT =====
+function tapMascot(){var mc=$('mascot');mc.classList.add('happy');setTimeout(function(){mc.classList.remove('happy');},700);var b=$('mascotBub');b.textContent=mascotPh[~~(Math.random()*mascotPh.length)];b.classList.add('show');setTimeout(function(){b.classList.remove('show');},2500);}
+
+// ===== VAULT =====
+function openVault(){if(VAULT.length===0){showOv('ovVE');return;}vaultFilter='all';renderVault();showOv('ovV');}
+function renderVault(){
+  $('vSum').innerHTML='<div class="vs-i"><div class="vn">'+VT.coins.toLocaleString()+'đ</div><div class="vl">🪙 Coin LynkiD</div></div><div class="vs-i"><div class="vn">'+VT.vouchers+'</div><div class="vl">🛒 Voucher</div></div><div class="vs-i"><div class="vn">'+VT.plays+'</div><div class="vl">🎮 Lượt chơi</div></div>';
+  $('vTb').innerHTML=['all','coin','voucher','game'].map(function(t){return '<button class="vtab'+(vaultFilter===t?' on':'')+'" onclick="vaultFilter=\''+t+'\';renderVault()">'+(t==='all'?'Tất cả':t==='coin'?'🪙 Coin':t==='voucher'?'🛒 Voucher':'🎮 Game')+'</button>';}).join('');
+  var f=vaultFilter==='all'?VAULT:VAULT.filter(function(v){return v.c===vaultFilter;});
+  $('vLs').innerHTML=f.length?f.slice().reverse().map(function(v){
+    var actCls=v.c==='coin'?'used':v.c==='voucher'?'use':'play';
+    var actTxt=v.act||( v.c==='coin'?'Đã cộng':v.c==='voucher'?'Dùng ngay':'Chơi ngay');
+    var tagCls=v.c;
+    var tagTxt=v.c==='coin'?'COIN':v.c==='voucher'?'VOUCHER':'LƯỢT CHƠI';
+    return '<div class="vi '+v.c+'"><div class="vi-ic">'+v.i+'</div><div class="vi-info"><div class="vi-name">'+v.n+'</div><div class="vi-desc">'+(v.desc||v.t)+'</div><div class="vi-tag '+tagCls+'">'+tagTxt+'</div></div><button class="vi-act '+actCls+'">'+actTxt+'</button></div>';
+  }).join(''):'<div style="padding:16px;color:var(--dim);font-size:11px">Chưa có phần thưởng loại này</div>';
+}
+function openSettings(){showOv('ovSet');}
+function openMissions(){
+  $('miLs').innerHTML=MISSIONS.map(function(m,i){return '<div class="mi"><span class="mii">'+m.ic+'</span><div class="mif"><div class="mit">'+m.tt+'</div><div class="mid">'+m.ds+' · '+m.p+'/'+m.t+'</div><div class="mib"><div class="mibf" style="width:'+(m.p/m.t*100)+'%"></div></div></div><button class="mia '+(m.dn===1?'ok':m.dn===2?'ok':'no')+'" '+(m.dn===1?'onclick="claimMi('+i+')"':'')+'>'+(m.dn===2?'✅':m.dn===1?'Nhận':m.rw)+'</button></div>';}).join('');
+  $('miLeft').textContent=makeupCredits;
+  showOv('ovMi');
+}
+function claimMi(i){MISSIONS[i].dn=2;makeupCredits++;openMissions();}
+
+// ===== MILESTONES =====
+function openMilestones(){
+  var cl=MS.filter(function(m){return m.st==='claimed';}).length;
+  var fp=Math.min(100,(cl/MS.length)*100+5);
+  $('msBody').innerHTML='<div class="msp"><div class="msl"></div><div class="mslf" style="height:'+fp+'%"></div>'+MS.map(function(m,i){
+    var dc=m.st==='claimed'?'cl':m.st==='unlocked'?'ul':'lk';
+    var det='';
+    if(m.st==='claimed')det='<span style="color:var(--grn);font-weight:700">✓ Đã nhận</span>';
+    else if(m.st==='unlocked')det='<span style="color:var(--gold);font-weight:700">Nhận ngay →</span>';
+    else if(m.unk)det='<span style="color:var(--org)">❓ Bí ẩn</span>';
+    else det=m.tags.map(function(t){return '<span class="mstag '+t+'">'+(t==='c'?'🪙 Coin':t==='v'?'🎟️ Voucher':'🎮 Game')+'</span>';}).join('')+'<span>Còn '+(m.day-CUR)+' ngày</span>';
+    return '<div class="msn'+(m.big?' big':'')+'" onclick="onMsN('+i+')"><div class="msd '+dc+'"><span>'+m.icon+'</span>'+(m.st==='locked'?'<span class="lki">🔒</span>':'')+'</div><div class="msi"><div class="msi-d">Ngày '+m.day+'</div><div class="msi-n">'+(m.unk&&m.st==='locked'?'???':m.name)+'</div><div class="msi-dt">'+det+'</div></div></div>';
+  }).join('')+'</div>';
+  $('msScr').classList.add('show');
+}
+function closeMs(){$('msScr').classList.remove('show');}
+function onMsN(i){
+  var m=MS[i];
+  if(m.st==='unlocked'){claimMs(i);return;}
+  $('msDTt').textContent='CỘT MỐC NGÀY '+m.day;
+  $('msDIc').textContent=m.st==='claimed'?'✅':m.unk?'❓':'🔒';
+  $('msDNm').textContent=m.unk&&m.st==='locked'?'Phần thưởng bí ẩn':m.name;
+  $('msDSb').textContent=m.st==='claimed'?'Đã nhận thưởng ✓':m.unk?'Sẽ tiết lộ khi đạt cột mốc!':'Còn '+(m.day-CUR)+' ngày nữa';
+  $('msDRw').innerHTML=m.unk&&m.st!=='claimed'?'<div class="rr"><span class="ri">❓</span><div class="rt"><div class="ra">???</div><div class="ry">Phần thưởng bí ẩn</div></div></div>':rwHtml(m.rw);
+  showOv('ovMsD');
+}
+function claimMs(i){
+  var m=MS[i];if(m.st!=='unlocked')return;m.st='claimed';
+  $('rwIc').textContent=m.icon;$('rwTt').textContent='Cột mốc ngày '+m.day+'!';$('rwSb').textContent=m.name;$('rwLs').innerHTML=rwHtml(m.rw);
+  closeMs();showOv('ovRw');confetti(document.querySelector('#ovRw .gf-body'));
+  for(var j=0;j<8;j++)setTimeout(spawnCoin,j*80);
+  var nb=MS.filter(function(m){return m.st==='unlocked';}).length;
+  $('mBadge').textContent=nb||'';if(!nb)$('mBadge').style.display='none';
+  updateNM();
+  // If reward is a box type (Hộp quà), show Blinbox redirect after closing reward popup
+  if(m.name.indexOf('Hộp quà')>=0){
+    var _oldClose=closeOv;
+    var _hooked=false;
+    closeOv=function(id){
+      _oldClose(id);
+      if(id==='ovRw'&&!_hooked){_hooked=true;closeOv=_oldClose;setTimeout(function(){showBlinboxPopup('Hộp quà '+m.name+'!','Mở hộp quà trong game Blinbox để nhận phần thưởng bí ẩn!');},400);}
+    };
+  }
+}
+
+// ===== BLINBOX =====
+function showBlinboxPopup(title,sub){
+  $('bbTitle').textContent=title||'Bạn nhận được Hộp quà!';
+  $('bbSub').textContent=sub||'Mở hộp quà trong game Blinbox để nhận phần thưởng bí ẩn!';
+  showOv('ovBlinbox');confetti(document.querySelector('#ovBlinbox .gf-body'));
+}
+function gotoBlinbox(){
+  closeOv('ovBlinbox');
+  // Simulate redirect to Blinbox game
+  tLog('🎰 Điều hướng → Blinbox game','ok');
+  alert('Điều hướng sang game Blinbox...\n(Trong app thật sẽ mở game Blinbox)');
+}
+
+// ===== TESTER =====
+function tLog(msg,ty){var l=$('tLog');var t=new Date().toTimeString().slice(0,8);l.innerHTML+='<div class="li"><span class="lt">['+t+']</span> <span class="'+(ty==='ok'?'lok':ty==='err'?'ler':ty==='warn'?'lw':'')+'">'+msg+'</span></div>';l.scrollTop=l.scrollHeight;}
+function tToast(msg,ty){var t=document.createElement('div');t.className='tt'+(ty?' '+ty:'');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.remove();},3000);}
+
+var _origCheckin=doCheckin;
+function retryCheckin(){onOk();}
+doCheckin=function(){
+  if(done)return;
+  if(netMode!=='ok'&&netMode!=='slow'){
+    // Error states: show popup, DON'T set done=true, DON'T destroy tear page
+    // Re-render strip to restore tear page
+    done=false;renderStrip();
+    if(netMode==='error')showOv('ovErrNet');
+    else if(netMode==='server')showOv('ovErrSrv');
+    else if(netMode==='timeout')showOv('ovErrTime');
+    else if(netMode==='ended')showOv('ovErrEnd');
+    tLog('❌ '+netMode,'err');
+    return;
+  }
+  if(netMode==='slow'){
+    tLog('🐌 Chậm 3s...','warn');showOv('ovLoading');
+    setTimeout(function(){closeOv('ovLoading');_origCheckin();tLog('✅ OK (delay)','ok');},3000);
+    return;
+  }
+  _origCheckin();tLog('✅ Check-in OK','ok');
+};
+
+var T={
+  reset:function(){done=false;DAYS.forEach(function(d){if(d.day===CUR)d.st='today';});$('banner').textContent='↕ Kéo xé lịch để điểm danh!';$('banner').classList.remove('success');$('okBtn').classList.remove('done');$('okBtn').textContent='Điểm danh';renderStrip();tLog('🔄 Reset','ok');tToast('Reset','ok');},
+  setDay:function(day){DAYS.forEach(function(d){d.st=d.day<day?'checked':d.day===day?'today':'future';});done=false;$('hStreak').textContent=day;$('sBig').textContent='🔥 '+day+' ngày liên tiếp';$('banner').textContent='↕ Kéo xé lịch để điểm danh!';$('banner').classList.remove('success');$('okBtn').classList.remove('done');$('okBtn').textContent='Điểm danh';CUR=day;renderStrip();updateNM();tLog('📅 Ngày='+day,'ok');},
+  setStreak:function(s){STREAK=s;$('hStreak').textContent=s;$('sBig').textContent='🔥 '+s+' ngày liên tiếp';tLog('🔥 Streak='+s,'ok');if(s===0)showOv('ovSW');},
+  miss:function(day){var d=DAYS.find(function(x){return x.day===day;});if(d){d.st='missed';renderStrip();tLog('❌ Bỏ lỡ ngày '+day,'warn');tToast('Bỏ lỡ ngày '+day,'w');}},
+  missMulti:function(days){days.forEach(function(day){var d=DAYS.find(function(x){return x.day===day;});if(d)d.st='missed';});renderStrip();tLog('❌ Bỏ lỡ '+days.join(','),'warn');},
+  missStreak:function(){T.setStreak(0);var y=DAYS.find(function(d){return d.day===CUR-1;});if(y)y.st='missed';renderStrip();tLog('💔 Mất streak','err');},
+  addMakeup:function(n){makeupCredits=n;tLog('🔄 Lượt bù='+n,'ok');tToast('Lượt bù: '+n,'ok');},
+  net:function(m){netMode=m;tLog('🌐 Net='+m,m==='ok'?'ok':'err');
+    // Immediately show the error popup for testing
+    if(m==='error')showOv('ovErrNet');
+    else if(m==='server')showOv('ovErrSrv');
+    else if(m==='timeout')showOv('ovErrTime');
+    else if(m==='ended')showOv('ovErrEnd');
+    else if(m==='slow')showOv('ovLoading');
+  },
+  setRw:function(type){var d=DAYS.find(function(x){return x.day===CUR;});if(!d)return;if(type==='none'){d.rw=[];d.label='Không quà';d.icon='📅';}else if(type==='coin'){d.rw=[{i:'🪙',a:'+100 Coin',t:'Điểm LynkiD'}];d.label='+100 Coin';d.icon='🪙';}else if(type==='voucher'){d.rw=[{i:'🎟️',a:'1 Voucher',t:'E-Voucher 50K'}];d.label='Voucher 50K';d.icon='🎟️';}else{d.rw=[{i:'🪙',a:'+500 Coin',t:'Điểm LynkiD'},{i:'🎟️',a:'1 Voucher',t:'E-Voucher 100K'},{i:'🎮',a:'+5 Lượt',t:'Lượt chơi game'}];d.label='Nhiều quà';d.icon='🎁';}renderStrip();tLog('🎁 Quà='+type,'ok');},
+  emptyVault:function(){VAULT.length=0;VT.coins=0;VT.vouchers=0;VT.plays=0;$('vBadge').textContent='0';tLog('📦 Kho trống','warn');},
+  fullVault:function(){VAULT.length=0;
+    var items=[
+      {i:'🪙',n:'+150đ',desc:'Coin LynkiD',c:'coin',act:'Đã cộng'},
+      {i:'🪙',n:'+100đ',desc:'Coin LynkiD',c:'coin',act:'Đã cộng'},
+      {i:'☕',n:'Highlands x2',desc:'Mua 2 tặng 1 đồ uống',c:'voucher',act:'Dùng ngay'},
+      {i:'🛒',n:'Shopee 15k',desc:'Voucher giảm 15k đơn 99k+',c:'voucher',act:'Dùng ngay'},
+      {i:'🛒',n:'Shopee 15k',desc:'Voucher giảm 15k đơn 99k+',c:'voucher',act:'Dùng ngay'},
+      {i:'🎮',n:'x1 Lượt chơi',desc:'Game X trong LynkiD',c:'game',act:'Chơi ngay'},
+      {i:'🪙',n:'+100đ',desc:'Coin LynkiD',c:'coin',act:'Đã cộng'},
+      {i:'🪙',n:'+100đ',desc:'Coin LynkiD',c:'coin',act:'Đã cộng'},
+      {i:'🛒',n:'Voucher 200k',desc:'E-Voucher giảm 200,000 VNĐ',c:'voucher',act:'Dùng ngay'},
+      {i:'🎮',n:'x2 Lượt chơi',desc:'Game Y trong LynkiD',c:'game',act:'Chơi ngay'}
+    ];
+    for(var j=0;j<20;j++){var it=items[j%items.length];VAULT.push({i:it.i,n:it.n,desc:it.desc,t:'0'+((j%28)+1)+'/04 08:00',c:it.c,act:it.act});}
+    VT.coins=5000;VT.vouchers=14;VT.plays=6;$('vBadge').textContent='20';tLog('📦 Kho đầy','ok');},
+  msAll:function(){MS.forEach(function(m){m.st='claimed';});$('mBadge').textContent='0';$('mBadge').style.display='none';updateNM();tLog('🏆 All claimed','ok');},
+  msNone:function(){MS.forEach(function(m){m.st='locked';});MS[0].st='unlocked';$('mBadge').textContent=MS.length;$('mBadge').style.display='';updateNM();tLog('🏆 All locked','warn');},
+  msNext:function(){var n=MS.find(function(m){return m.st==='locked';});if(n){n.st='unlocked';updateNM();tLog('🏆 Mở ngày '+n.day,'ok');}},
+  dblCheckin:function(){tLog('⚡ Double check-in','warn');onOk();setTimeout(onOk,100);setTimeout(onOk,200);},
+  longName:function(){var d=DAYS.find(function(x){return x.day===CUR;});if(d){d.rw=[{i:'🎟️',a:'1 Super Mega Ultra Voucher',t:'E-Voucher Giảm Giá Đặc Biệt Siêu Khuyến Mãi 500K VNĐ'}];d.label='Super Mega Voucher';renderStrip();tLog('📝 Tên dài','warn');}},
+  showBlinbox:function(){showBlinboxPopup();tLog('🎰 Blinbox popup','ok');},
+  showRules:function(){showOv('ovRules');tLog('📜 Thể lệ','ok');}
+};
+
+// ===== INIT =====
+renderStrip();updateNM();
+</script>
